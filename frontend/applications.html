@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Required Approvals | AnumatiSetu</title>
+  <title>Applications Tracker | AnumatiSetu</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -20,8 +20,8 @@
       <nav class="nav-menu" id="main-nav-links" aria-label="Main Navigation">
         <a href="dashboard.html" class="nav-link">Dashboard</a>
         <a href="profile.html" class="nav-link">Business Profile</a>
-        <a href="approvals.html" class="nav-link active">Required Approvals</a>
-        <a href="applications.html" class="nav-link">Applications</a>
+        <a href="approvals.html" class="nav-link">Required Approvals</a>
+        <a href="applications.html" class="nav-link active">Applications</a>
         <a href="documents.html" class="nav-link">Documents</a>
         <a href="renewals.html" class="nav-link">Renewals</a>
       </nav>
@@ -61,57 +61,43 @@
   </header>
 
   <!-- =========================================================================
-       2. MAIN CONTENT: REQUIRED APPROVALS CATALOG
+       2. MAIN CONTENT: APPLICATIONS TRACKER
        ========================================================================= -->
   <main class="main-content">
     <div class="app-container">
 
       <div class="page-header">
         <div>
-          <h1>Required Approvals &amp; Compliance</h1>
-          <p>Statutory approvals, licenses, and clearances determined for your business profile.</p>
+          <h1>Applications Tracker</h1>
+          <p>Track, submit, and manage statutory applications through regulatory review, inspections, and approval stages.</p>
         </div>
         <div>
-          <a href="applications.html" class="btn btn-secondary btn-sm">
-            View Applications Tracker →
+          <a href="approvals.html" class="btn btn-primary btn-sm">
+            + New Application from Required Approvals
           </a>
         </div>
       </div>
 
-      <!-- Filter Bar -->
+      <!-- Filter Buttons Bar -->
       <section class="filter-bar">
-        <div>
-          <input 
-            type="text" 
-            id="req-search-input" 
-            class="search-input" 
-            placeholder="Search approvals by name, department..." 
-            aria-label="Search Approvals" 
-          />
+        <div class="filter-btn-group" role="group" aria-label="Application Status Filters">
+          <button type="button" class="filter-btn app-filter-btn active" data-status="ALL">All</button>
+          <button type="button" class="filter-btn app-filter-btn" data-status="DRAFT">Draft</button>
+          <button type="button" class="filter-btn app-filter-btn" data-status="SUBMITTED">Submitted</button>
+          <button type="button" class="filter-btn app-filter-btn" data-status="UNDER REVIEW">Under Review</button>
+          <button type="button" class="filter-btn app-filter-btn" data-status="CLARIFICATION REQUIRED">Clarification</button>
+          <button type="button" class="filter-btn app-filter-btn" data-status="INSPECTION REQUIRED">Inspection</button>
+          <button type="button" class="filter-btn app-filter-btn" data-status="APPROVED">Approved</button>
+          <button type="button" class="filter-btn app-filter-btn" data-status="REJECTED">Rejected</button>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <label for="req-category-filter" style="font-size: 0.82rem; font-weight: 600; color: var(--slate-600);">Category:</label>
-          <select id="req-category-filter" class="form-select" style="padding: 0.4rem 0.75rem; font-size: 0.82rem;">
-            <option value="ALL">All Categories</option>
-            <option value="General Business">General Business</option>
-            <option value="Environment">Environment</option>
-            <option value="Safety & Hazard">Safety &amp; Hazard</option>
-            <option value="Labour & Safety">Labour &amp; Safety</option>
-            <option value="Labour Welfare">Labour Welfare</option>
-            <option value="Infrastructure">Infrastructure</option>
-            <option value="Food Safety">Food Safety</option>
-          </select>
+        <div style="font-size: 0.82rem; font-weight: 600; color: var(--slate-600);" id="applications-count-display">
+          <!-- Dynamically populated -->
         </div>
       </section>
 
-      <!-- Approvals Results Count -->
-      <div style="margin-bottom: 0.75rem; font-size: 0.84rem; font-weight: 600; color: var(--slate-600);" id="requirements-count">
-        <!-- Dynamically rendered -->
-      </div>
-
-      <!-- Approvals Table Container -->
-      <section class="card" style="padding: 0; overflow: hidden;" id="requirements-table-container">
+      <!-- Applications Table / Empty State Container -->
+      <section class="card" style="padding: 0; overflow: hidden;" id="applications-table-container">
         <!-- Dynamically populated by script.js -->
       </section>
 
@@ -139,6 +125,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=4"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>

@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="AlgoRhythms - Industrial Profile Setup & Intelligent Requirements Generator" />
-  <title>Industrial Profile | AlgoRhythms (SIH26130)</title>
+  <title>Business Profile | AnumatiSetu</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -12,52 +11,46 @@
   <!-- =========================================================================
        1. GLOBAL NAVIGATION BAR
        ========================================================================= -->
-  <nav class="navbar" aria-label="Main Navigation">
+  <header class="navbar" role="banner">
     <div class="nav-container">
       <a href="index.html" class="brand-link">
-        <img src="assets/logo.svg" alt="AlgoRhythms Logo" class="brand-logo-img" />
-        <span class="sih-tag">SIH26130</span>
+        <img src="assets/logo.svg" alt="AnumatiSetu" class="brand-logo-img" />
       </a>
 
-      <ul class="nav-menu" id="main-nav-menu">
-        <li><a href="index.html" class="nav-link">Home</a></li>
-        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
-        <li><a href="approvals.html" class="nav-link">Approvals</a></li>
-        <li><a href="compliance.html" class="nav-link">Compliance</a></li>
-        <li><a href="schemes.html" class="nav-link">Support Schemes</a></li>
-        <li><a href="profile.html" class="nav-link active">Profile</a></li>
-      </ul>
+      <nav class="nav-menu" id="main-nav-links" aria-label="Main Navigation">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="profile.html" class="nav-link active">Business Profile</a>
+        <a href="approvals.html" class="nav-link">Required Approvals</a>
+        <a href="applications.html" class="nav-link">Applications</a>
+        <a href="documents.html" class="nav-link">Documents</a>
+        <a href="renewals.html" class="nav-link">Renewals</a>
+      </nav>
 
       <div class="nav-actions">
-        <!-- Notification Dropdown -->
         <div class="notif-wrapper">
-          <button class="notif-btn" id="nav-notif-btn" aria-label="Notifications">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="notif-btn" id="nav-notif-btn" aria-label="System Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
-            <span class="notif-badge" id="nav-notif-badge" style="display: none;">3</span>
+            <span class="notif-badge" id="nav-notif-badge" style="display: none;">0</span>
           </button>
 
           <div class="notif-dropdown" id="nav-notif-dropdown">
             <div class="notif-header">
-              <h4>System Alerts & Reminders</h4>
-              <button class="notif-mark-btn" id="notif-mark-all-btn">Mark all read</button>
+              <span>Notifications &amp; Alerts</span>
+              <button id="notif-mark-all-read">Mark all read</button>
             </div>
-            <ul class="notif-list" id="notif-items-list"></ul>
-            <div class="notif-footer">
-              <a href="dashboard.html">View Centralized Dashboard &rarr;</a>
-            </div>
+            <div class="notif-list" id="notif-list-container"></div>
           </div>
         </div>
 
-        <a href="profile.html" class="nav-profile-pill" title="View Industrial Profile">
-          <div class="nav-avatar dyn-avatar-char">A</div>
-          <span class="nav-profile-name dyn-industry-name">Apex BioTech</span>
+        <a href="profile.html" class="profile-pill dyn-biz-name" title="View Business Profile">
+          Set Up Business Profile
         </a>
 
         <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -65,93 +58,86 @@
         </button>
       </div>
     </div>
-  </nav>
+  </header>
 
   <!-- =========================================================================
-       2. MAIN CONTENT: INDUSTRIAL PROFILE FORM
+       2. MAIN CONTENT: BUSINESS PROFILE FORM
        ========================================================================= -->
   <main class="main-content">
     <div class="app-container">
-      
-      <!-- Page Header -->
+
       <div class="page-header">
-        <div class="page-title-group">
-          <h1>Create Your Industrial Profile</h1>
-          <p>Provide your business specifications to generate statutory approval pipelines, compliance checklists, and matched government schemes.</p>
+        <div>
+          <h1>Business Profile</h1>
+          <p>Specify your entity details to determine mandatory statutory approvals, department clearances, and inspection mandates.</p>
         </div>
-        <div style="display: flex; gap: 0.5rem;">
-          <button type="button" class="btn btn-secondary btn-sm" id="quick-fill-demo-btn">
-            ⚡ Quick-Load Demo Profile (Food Processing)
-          </button>
-          <button type="button" class="btn btn-outline btn-sm" id="reset-profile-btn" style="color: var(--danger-primary); border-color: var(--danger-border);">
-            Reset Data
+        <div>
+          <button type="button" class="btn btn-secondary btn-sm" id="clear-all-data-btn">
+            Sign Out
           </button>
         </div>
       </div>
 
-      <!-- Two-column Layout: Form on left, Profile Summary & Info on right -->
-      <div class="dashboard-grid">
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
         
-        <!-- Left: Form Card -->
+        <!-- Left: Form -->
         <div class="card">
           <div class="card-header">
             <h3>Enterprise Registration Details</h3>
-            <span class="badge badge-info">Step 1 of Onboarding</span>
           </div>
 
-          <form id="industrial-profile-form" novalidate>
+          <form id="business-profile-form" onsubmit="handleProfileFormSubmit(event); return false;" novalidate>
             <div class="form-grid">
               
-              <!-- 1. Industry / Business Name -->
+              <!-- Business Name -->
               <div class="form-group full-width">
                 <label for="businessName" class="form-label">
-                  Industry / Business Name <span class="required">*</span>
+                  Business / Entity Legal Name <span class="required">*</span>
                 </label>
                 <input 
                   type="text" 
                   id="businessName" 
                   name="businessName" 
                   class="form-control" 
-                  placeholder="e.g. Apex BioTech Solutions Pvt Ltd" 
+                  placeholder="e.g. Precision Engineering Works Pvt Ltd" 
                   required 
                 />
-                <span class="form-helper">Official registered entity name as per MCA / Udyam portal</span>
+                <span class="form-helper">Registered commercial entity name</span>
               </div>
 
-              <!-- 2. Industry Type -->
+              <!-- Industry Type -->
               <div class="form-group">
                 <label for="industryType" class="form-label">
-                  Industry Type <span class="required">*</span>
+                  Industry / Activity Sector <span class="required">*</span>
                 </label>
                 <select id="industryType" name="industryType" class="form-select" required>
-                  <option value="Manufacturing">Manufacturing</option>
-                  <option value="Food Processing">Food Processing</option>
+                  <option value="Manufacturing">Manufacturing / Engineering</option>
+                  <option value="Food Processing">Food Processing &amp; Agro</option>
                   <option value="Textile">Textile &amp; Apparel</option>
                   <option value="Electronics">Electronics &amp; Hardware</option>
-                  <option value="Chemicals">Chemicals &amp; Pharmaceuticals</option>
-                  <option value="Services">Industrial Services / Engineering</option>
-                  <option value="Other">Other</option>
+                  <option value="Chemicals">Chemicals &amp; Hazardous Materials</option>
+                  <option value="Services">Commercial Services / Warehousing</option>
+                  <option value="Other">Other General Business</option>
                 </select>
-                <span class="form-helper">Determines statutory SPCB, safety &amp; trade mandates</span>
+                <span class="form-helper">Determines SPCB environmental categories, FSSAI, or PESO mandates</span>
               </div>
 
-              <!-- 3. Business Stage -->
+              <!-- Business Stage -->
               <div class="form-group">
                 <label for="businessStage" class="form-label">
-                  Business Stage <span class="required">*</span>
+                  Operating Stage <span class="required">*</span>
                 </label>
                 <select id="businessStage" name="businessStage" class="form-select" required>
-                  <option value="Existing Business">Existing Business (Operational)</option>
+                  <option value="New Setup">New Setup (Pre-Operational)</option>
                   <option value="Expansion">Expansion / Brownfield Upgrade</option>
-                  <option value="New Setup">New Setup (Greenfield Project)</option>
+                  <option value="Existing Business">Existing Business (Operational)</option>
                 </select>
-                <span class="form-helper">Affects pre-operational vs. renewal approvals</span>
               </div>
 
-              <!-- 4. Location -->
+              <!-- Location -->
               <div class="form-group">
                 <label for="location" class="form-label">
-                  Location / Industrial Area <span class="required">*</span>
+                  Operating Location / Industrial Estate <span class="required">*</span>
                 </label>
                 <input 
                   type="text" 
@@ -161,10 +147,9 @@
                   placeholder="e.g. Peenya Industrial Estate, Bengaluru" 
                   required 
                 />
-                <span class="form-helper">City, industrial estate, or cluster</span>
               </div>
 
-              <!-- 5. State -->
+              <!-- State -->
               <div class="form-group">
                 <label for="state" class="form-label">
                   State / Union Territory <span class="required">*</span>
@@ -179,31 +164,28 @@
                   <option value="Uttar Pradesh">Uttar Pradesh</option>
                   <option value="Rajasthan">Rajasthan</option>
                   <option value="Haryana">Haryana</option>
-                  <option value="Goa">Goa</option>
                   <option value="Delhi NCR">Delhi NCR</option>
+                  <option value="Goa">Goa</option>
                   <option value="West Bengal">West Bengal</option>
-                  <option value="Other">Other State</option>
+                  <option value="Other">Other</option>
                 </select>
-                <span class="form-helper">Maps to State Pollution Control Board &amp; DISH rules</span>
               </div>
 
-              <!-- 6. Investment Amount -->
+              <!-- Investment in Plant & Machinery -->
               <div class="form-group">
-                <label for="investmentAmount" class="form-label">
-                  Investment in Plant &amp; Machinery <span class="required">*</span>
+                <label for="investmentScale" class="form-label">
+                  Investment in Plant &amp; Machinery
                 </label>
                 <input 
                   type="text" 
-                  id="investmentAmount" 
-                  name="investmentAmount" 
+                  id="investmentScale" 
+                  name="investmentScale" 
                   class="form-control" 
-                  placeholder="e.g. ₹12.50 Crores" 
-                  required 
+                  placeholder="e.g. ₹8.5 Crores" 
                 />
-                <span class="form-helper">Total gross book value of capital assets</span>
               </div>
 
-              <!-- 7. Number of Employees -->
+              <!-- Employees Count -->
               <div class="form-group">
                 <label for="employeesCount" class="form-label">
                   Number of Employees <span class="required">*</span>
@@ -213,70 +195,54 @@
                   id="employeesCount" 
                   name="employeesCount" 
                   class="form-control" 
-                  placeholder="e.g. 140" 
-                  min="1" 
+                  placeholder="e.g. 35" 
+                  min="0" 
                   required 
                 />
-                <span class="form-helper">Triggers EPFO (>20), ESIC (>10), and Factory Act (>10/20)</span>
+                <span class="form-helper">Thresholds: ≥10 triggers ESIC &amp; Factories Act; ≥20 triggers EPFO</span>
               </div>
 
-              <!-- 8. Business Category -->
+              <!-- MSME Category -->
               <div class="form-group full-width">
                 <label for="businessCategory" class="form-label">
-                  MSME / Business Category <span class="required">*</span>
+                  Business Scale / Category <span class="required">*</span>
                 </label>
                 <select id="businessCategory" name="businessCategory" class="form-select" required>
-                  <option value="Micro Enterprise">Micro Enterprise (Investment &lt; ₹1 Cr &amp; Turnover &lt; ₹5 Cr)</option>
-                  <option value="Small Enterprise">Small Enterprise (Investment &lt; ₹10 Cr &amp; Turnover &lt; ₹50 Cr)</option>
-                  <option value="Medium Enterprise">Medium Enterprise (Investment &lt; ₹50 Cr &amp; Turnover &lt; ₹250 Cr)</option>
+                  <option value="Micro Enterprise">Micro Enterprise (Investment &lt; ₹1 Cr)</option>
+                  <option value="Small Enterprise">Small Enterprise (Investment &lt; ₹10 Cr)</option>
+                  <option value="Medium Enterprise">Medium Enterprise (Investment &lt; ₹50 Cr)</option>
                   <option value="Large Enterprise">Large Enterprise (Investment &gt; ₹50 Cr)</option>
                 </select>
-                <span class="form-helper">Used for targeted subsidy schemes and statutory exemptions</span>
               </div>
 
             </div>
 
-            <div style="margin-top: 2rem; display: flex; align-items: center; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--slate-100); padding-top: 1.25rem;">
+            <div style="margin-top: 1.5rem; border-top: 1px solid var(--slate-100); padding-top: 1rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
               <a href="dashboard.html" class="btn btn-secondary">Cancel</a>
-              <button type="submit" class="btn btn-primary btn-lg" id="generate-reqs-btn">
-                <span>⚡</span> Generate Requirements
+              <button type="submit" class="btn btn-primary">
+                Save Profile &amp; Determine Requirements →
               </button>
             </div>
           </form>
         </div>
 
-        <!-- Right: Smart Mapping Info & Profile Overview Card -->
-        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-          
-          <!-- Smart Automation Explainer -->
-          <div class="card" style="background: linear-gradient(to bottom, #ffffff, var(--primary-50));">
-            <div class="card-header">
-              <h3>Intelligent Rule Engine</h3>
-              <span class="badge badge-success">Automated</span>
-            </div>
-            <p style="font-size: 0.88rem; color: var(--slate-700); line-height: 1.5; margin-bottom: 1rem;">
-              When you click <strong>Generate Requirements</strong>, AlgoRhythms dynamically maps:
+        <!-- Right: Information & Mapping Rules -->
+        <div>
+          <div class="card">
+            <h3 style="font-size: 0.98rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.5rem;">
+              How Requirements Are Determined
+            </h3>
+            <p style="font-size: 0.84rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 0.75rem;">
+              AnumatiSetu evaluates your business characteristics against statutory Indian regulations:
             </p>
-            <ul style="font-size: 0.85rem; color: var(--slate-600); margin-left: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;">
-              <li><strong>Approvals Pipeline:</strong> Identifies State Pollution (CTO/CTE), Fire NOC, Factory Licensing, and Boilers acts.</li>
-              <li><strong>Compliance Schedule:</strong> Sets deadline calendars for GSTR-9, SPCB Form V, and Labour ESIC/EPFO returns.</li>
-              <li><strong>Government Schemes:</strong> Matches eligible PLI, MSME CLCSS, and ZED subsidies.</li>
+            <ul style="font-size: 0.82rem; color: var(--slate-600); margin-left: 1.25rem; display: flex; flex-direction: column; gap: 0.4rem;">
+              <li><strong>Factories Act 1948:</strong> Triggered for manufacturing units with 10+ workers.</li>
+              <li><strong>SPCB Air/Water Acts:</strong> Applicable for manufacturing, chemical, food &amp; textile units.</li>
+              <li><strong>EPFO / ESIC Acts:</strong> Triggered by employee headcounts (&ge;10 and &ge;20).</li>
+              <li><strong>Fire Safety NOC:</strong> Mandatory building &amp; industrial safety clearance.</li>
+              <li><strong>Specialized Acts:</strong> FSSAI for food units, PESO for hazardous chemicals, IBR for boilers.</li>
             </ul>
           </div>
-
-          <!-- Quick Tips Card -->
-          <div class="card">
-            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.75rem;">
-              💡 SIH Hackathon Demo Tip
-            </h4>
-            <p style="font-size: 0.85rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 0.75rem;">
-              You can modify the <strong>Industry Type</strong> (e.g. switch to <em>Food Processing</em> or <em>Chemicals</em>) or change the <strong>Business Stage</strong> to watch the engine generate specialized statutory compliance requirements.
-            </p>
-            <div style="font-size: 0.78rem; color: var(--slate-500); background: var(--slate-100); padding: 0.6rem 0.8rem; border-radius: var(--radius-sm);">
-              Data is saved in browser localStorage and prepared for REST API integration (`/api/profile`).
-            </div>
-          </div>
-
         </div>
 
       </div>
@@ -289,58 +255,22 @@
        ========================================================================= -->
   <footer class="site-footer">
     <div class="app-container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <h4>Algo<span style="color: var(--primary-600);">Rhythms</span></h4>
-          <p style="font-size: 0.88rem; color: var(--slate-500); margin-bottom: 1rem;">
-            Smart automation for industrial approvals, statutory compliance management, and government support scheme integration.
-          </p>
-          <div style="font-size: 0.75rem; color: var(--slate-400);">
-            Built for Smart India Hackathon &bull; Problem ID: SIH26130
-          </div>
+      <div class="footer-inner">
+        <div>
+          <strong>AnumatiSetu</strong> &bull; Business Compliance &amp; Approval Management Platform
         </div>
-
-        <div class="footer-col">
-          <h5>Platform Modules</h5>
-          <ul class="footer-links">
-            <li><a href="dashboard.html">Central Dashboard</a></li>
-            <li><a href="approvals.html">Approval Tracker</a></li>
-            <li><a href="compliance.html">Compliance Center</a></li>
-            <li><a href="schemes.html">Support Schemes</a></li>
-            <li><a href="profile.html">Industrial Profile</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h5>Compliance Acts</h5>
-          <ul class="footer-links">
-            <li><a href="compliance.html">Factories Act 1948</a></li>
-            <li><a href="compliance.html">Air &amp; Water Acts (SPCB)</a></li>
-            <li><a href="compliance.html">State Fire Safety Rules</a></li>
-            <li><a href="compliance.html">EPF &amp; MP Act 1952</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h5>Prototype Control</h5>
-          <p style="font-size: 0.82rem; color: var(--slate-500); line-height: 1.5; margin-bottom: 0.75rem;">
-            Need to reset your demo environment to initial seed values?
-          </p>
-          <button class="btn btn-secondary btn-sm" onclick="AlgoDataStore.resetToDefault(); AlgoUI.showToast('Reset data to defaults.', 'info'); setTimeout(()=>location.reload(), 400);">
-            🔄 Reset Demo State
-          </button>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <div>&copy; 2026 AlgoRhythms &bull; SIH26130 Prototype. All rights reserved.</div>
         <div style="display: flex; gap: 1rem;">
-          <a href="dashboard.html">View Dashboard</a>
+          <a href="dashboard.html">Dashboard</a>
+          <a href="profile.html">Business Profile</a>
+          <a href="approvals.html">Approvals</a>
+          <a href="applications.html">Applications</a>
+          <a href="documents.html">Documents</a>
+          <a href="renewals.html">Renewals</a>
         </div>
       </div>
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=4"></script>
 </body>
 </html>

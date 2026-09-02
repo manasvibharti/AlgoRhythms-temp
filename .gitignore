@@ -15,3 +15,10 @@ npm-debug.log*
 dist/
 tmp/
 *.log
+
+# Environment & secrets
+.env
+.env.*
+
+# Uploaded files (stored on server)
+backend/uploads/

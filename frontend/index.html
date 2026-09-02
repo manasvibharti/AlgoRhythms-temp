@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="AlgoRhythms - Smart Industrial Approvals, Compliance Management and Government Support Services Platform for SIH26130" />
-  <title>AlgoRhythms | Smart Industrial Approvals & Compliance Platform (SIH26130)</title>
+  <title>AnumatiSetu — Business Compliance & Statutory Approval Platform</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -12,59 +11,47 @@
   <!-- =========================================================================
        1. GLOBAL NAVIGATION BAR
        ========================================================================= -->
-  <nav class="navbar" aria-label="Main Navigation">
+  <header class="navbar" role="banner">
     <div class="nav-container">
       <a href="index.html" class="brand-link">
-        <img src="assets/logo.svg" alt="AlgoRhythms Logo" class="brand-logo-img" />
-        <span class="sih-tag">SIH26130</span>
+        <img src="assets/logo.svg" alt="AnumatiSetu" class="brand-logo-img" />
       </a>
 
-      <!-- Desktop Navigation Links -->
-      <ul class="nav-menu" id="main-nav-menu">
-        <li><a href="index.html" class="nav-link active">Home</a></li>
-        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
-        <li><a href="approvals.html" class="nav-link">Approvals</a></li>
-        <li><a href="compliance.html" class="nav-link">Compliance</a></li>
-        <li><a href="schemes.html" class="nav-link">Support Schemes</a></li>
-        <li><a href="profile.html" class="nav-link">Profile</a></li>
-      </ul>
+      <nav class="nav-menu" id="main-nav-links" aria-label="Main Navigation">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="profile.html" class="nav-link">Business Profile</a>
+        <a href="approvals.html" class="nav-link">Required Approvals</a>
+        <a href="applications.html" class="nav-link">Applications</a>
+        <a href="documents.html" class="nav-link">Documents</a>
+        <a href="renewals.html" class="nav-link">Renewals</a>
+      </nav>
 
-      <!-- User Area & Notification Trigger -->
       <div class="nav-actions">
-        <!-- Notification Dropdown Toggle -->
+        <!-- Notification Dropdown -->
         <div class="notif-wrapper">
-          <button class="notif-btn" id="nav-notif-btn" aria-label="Notifications">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="notif-btn" id="nav-notif-btn" aria-label="System Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
-            <span class="notif-badge" id="nav-notif-badge" style="display: none;">3</span>
+            <span class="notif-badge" id="nav-notif-badge" style="display: none;">0</span>
           </button>
 
-          <!-- Notification Dropdown Panel -->
           <div class="notif-dropdown" id="nav-notif-dropdown">
             <div class="notif-header">
-              <h4>System Alerts & Reminders</h4>
-              <button class="notif-mark-btn" id="notif-mark-all-btn">Mark all read</button>
+              <span>Notifications &amp; Alerts</span>
+              <button id="notif-mark-all-read">Mark all read</button>
             </div>
-            <ul class="notif-list" id="notif-items-list">
-              <!-- Dynamically populated by script.js -->
-            </ul>
-            <div class="notif-footer">
-              <a href="dashboard.html">View Centralized Dashboard &rarr;</a>
-            </div>
+            <div class="notif-list" id="notif-list-container"></div>
           </div>
         </div>
 
-        <!-- Profile Pill Link -->
-        <a href="profile.html" class="nav-profile-pill" title="View Industrial Profile">
-          <div class="nav-avatar dyn-avatar-char">A</div>
-          <span class="nav-profile-name dyn-industry-name">Apex BioTech</span>
+        <a href="profile.html" class="profile-pill dyn-biz-name" title="View Business Profile">
+          Set Up Business Profile
         </a>
 
-        <!-- Mobile Menu Hamburger -->
         <button class="mobile-toggle" id="mobile-menu-toggle" aria-label="Toggle Menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -72,279 +59,139 @@
         </button>
       </div>
     </div>
-  </nav>
+  </header>
 
   <!-- =========================================================================
-       2. HERO SECTION
+       2. MAIN CONTENT
        ========================================================================= -->
-  <main class="main-content" style="padding-top: 1rem;">
+  <main class="main-content">
     <div class="app-container">
-      <section class="hero-section">
-        <div class="hero-pill">
-          <span>🛡️</span> Smart India Hackathon 2024 &bull; Problem Statement SIH26130
-        </div>
-        
-        <h1 class="hero-title">
-          Simplify Industrial Approvals &amp; <span>Compliance.</span>
+
+      <!-- Hero Section -->
+      <section style="padding: 3rem 0 3.5rem; text-align: center;">
+        <h1 style="font-size: 2.75rem; font-weight: 800; color: var(--slate-900); letter-spacing: -0.6px; line-height: 1.2; max-width: 840px; margin: 0 auto 1.25rem;">
+          The Centralized Gateway for Business Approvals &amp; Compliance
         </h1>
         
-        <p class="hero-subtitle">
-          A smart automation platform that helps industries identify requirements, track approvals, manage compliance and stay ahead of important deadlines.
+        <p style="font-size: 1.1rem; color: var(--slate-600); max-width: 700px; margin: 0 auto 2.25rem; line-height: 1.6;">
+          AnumatiSetu streamlines statutory regulatory clearances across state and central departments. Identify required approvals, track applications, manage documents, coordinate inspections, and monitor renewals in one unified control panel.
         </p>
 
-        <div class="hero-cta-group">
+        <div style="display: flex; justify-content: center; gap: 0.85rem; flex-wrap: wrap;">
           <a href="profile.html" class="btn btn-primary btn-lg">
-            <span>⚡</span> Create Industrial Profile
+            Create Business Profile →
           </a>
           <a href="dashboard.html" class="btn btn-secondary btn-lg">
-            <span>📊</span> View Dashboard
+            Open Dashboard
           </a>
-        </div>
-
-        <!-- Professional Dashboard Preview Mockup -->
-        <div class="hero-preview-wrapper">
-          <div class="hero-preview-topbar">
-            <div class="dot-btn dot-red"></div>
-            <div class="dot-btn dot-yellow"></div>
-            <div class="dot-btn dot-green"></div>
-            <span style="font-size: 0.8rem; color: var(--slate-400); margin-left: 0.5rem; font-family: var(--font-mono);">
-              algorhythms.gov.in / industrial-dashboard / apex-biotech
-            </span>
-          </div>
-
-          <!-- Preview Body -->
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem;">
-            <div class="kpi-card kpi-total" style="padding: 1rem;">
-              <div class="kpi-info">
-                <span class="kpi-label">Total Requirements</span>
-                <span class="kpi-value" style="font-size: 1.6rem;">12</span>
-              </div>
-              <div class="kpi-icon-box" style="width: 38px; height: 38px; font-size: 1rem;">📋</div>
-            </div>
-            <div class="kpi-card kpi-completed" style="padding: 1rem;">
-              <div class="kpi-info">
-                <span class="kpi-label">Completed</span>
-                <span class="kpi-value" style="font-size: 1.6rem; color: var(--success-dark);">7</span>
-              </div>
-              <div class="kpi-icon-box" style="width: 38px; height: 38px; font-size: 1rem;">✓</div>
-            </div>
-            <div class="kpi-card kpi-pending" style="padding: 1rem;">
-              <div class="kpi-info">
-                <span class="kpi-label">Pending</span>
-                <span class="kpi-value" style="font-size: 1.6rem; color: var(--warning-dark);">3</span>
-              </div>
-              <div class="kpi-icon-box" style="width: 38px; height: 38px; font-size: 1rem;">⏳</div>
-            </div>
-            <div class="kpi-card kpi-overdue" style="padding: 1rem;">
-              <div class="kpi-info">
-                <span class="kpi-label">Overdue</span>
-                <span class="kpi-value" style="font-size: 1.6rem; color: var(--danger-dark);">2</span>
-              </div>
-              <div class="kpi-icon-box" style="width: 38px; height: 38px; font-size: 1rem;">⚠️</div>
-            </div>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: space-between; background: var(--slate-50); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--slate-200);">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-              <span class="badge badge-success">Overall Compliance: 78%</span>
-              <span style="font-size: 0.85rem; color: var(--slate-600);">Next Action: <strong>Fire Safety NOC</strong> due in 3 days</span>
-            </div>
-            <a href="dashboard.html" class="btn btn-outline btn-sm">Explore Interactive Console &rarr;</a>
-          </div>
         </div>
       </section>
 
-      <!-- =====================================================================
-           3. CORE FEATURES GRID
-           ===================================================================== -->
-      <section style="margin: 4rem 0;">
-        <div style="text-align: center; margin-bottom: 2.5rem;">
-          <h2 style="font-size: 2rem; font-weight: 800; color: var(--slate-900);">
-            Intelligent Automation for Industrial Governance
+      <!-- The Core Conceptual Flow -->
+      <section class="card" style="padding: 2rem; margin-bottom: 2rem;">
+        <div style="text-align: center; margin-bottom: 1.75rem;">
+          <h2 style="font-size: 1.35rem; font-weight: 700; color: var(--slate-900);">
+            Integrated Compliance Lifecycle
           </h2>
-          <p style="color: var(--slate-600); max-width: 620px; margin: 0.5rem auto 0;">
-            Eliminate compliance blind spots, reduce regulatory friction, and tap into central &amp; state incentive schemes seamlessly.
+          <p style="font-size: 0.9rem; color: var(--slate-500); margin-top: 0.25rem;">
+            A structured pathway connecting enterprises with statutory authorities
           </p>
         </div>
 
-        <div class="features-grid">
-          <!-- Feature 1 -->
-          <div class="feature-card">
-            <div class="feature-icon-box">📋</div>
-            <h3>Smart Approvals</h3>
-            <p>
-              Identify potentially required approvals and clearances dynamically based on your industrial sector, scale, and operating geography.
-            </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+          
+          <div style="background-color: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1.25rem 1rem; text-align: center;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--brand-700); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;">Phase 1</div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--slate-900);">Business Profile</div>
+            <div style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0.35rem;">Specify industry type, scale, state &amp; workforce</div>
           </div>
 
-          <!-- Feature 2 -->
-          <div class="feature-card">
-            <div class="feature-icon-box">📈</div>
-            <h3>Compliance Tracking</h3>
-            <p>
-              Track completed, pending and overdue compliance requirements with categorized checklists and regulatory act references.
-            </p>
+          <div style="background-color: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1.25rem 1rem; text-align: center;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--brand-700); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;">Phase 2</div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--slate-900);">Required Approvals</div>
+            <div style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0.35rem;">Automated mapping of mandatory NOCs &amp; permits</div>
           </div>
 
-          <!-- Feature 3 -->
-          <div class="feature-card">
-            <div class="feature-icon-box">⚡</div>
-            <h3>Automation &amp; Alerts</h3>
-            <p>
-              Generate proactive reminders, statutory deadline countdowns, and automated notifications to prevent penalties.
-            </p>
+          <div style="background-color: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1.25rem 1rem; text-align: center;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--brand-700); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;">Phase 3</div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--slate-900);">Applications &amp; Docs</div>
+            <div style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0.35rem;">Attach required documents &amp; submit to authorities</div>
           </div>
 
-          <!-- Feature 4 -->
-          <div class="feature-card">
-            <div class="feature-icon-box">💡</div>
-            <h3>Support Discovery</h3>
-            <p>
-              Show potentially relevant support schemes, capital subsidies, and PLI incentives tailored to your enterprise profile.
-            </p>
+          <div style="background-color: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1.25rem 1rem; text-align: center;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--brand-700); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;">Phase 4</div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--slate-900);">Review &amp; Inspection</div>
+            <div style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0.35rem;">Handle clarifications &amp; scheduled site audits</div>
           </div>
+
+          <div style="background-color: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 1.25rem 1rem; text-align: center;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--brand-700); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px;">Phase 5</div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: var(--slate-900);">Renewal Tracking</div>
+            <div style="font-size: 0.8rem; color: var(--slate-500); margin-top: 0.35rem;">Automated license expiry monitoring &amp; renewals</div>
+          </div>
+
         </div>
       </section>
 
-      <!-- =====================================================================
-           4. HOW IT WORKS SECTION (PIPELINE)
-           ===================================================================== -->
-      <section class="pipeline-section">
-        <h2 style="font-size: 1.85rem; font-weight: 800; color: var(--slate-900); margin-bottom: 0.5rem;">
-          How AlgoRhythms Works
-        </h2>
-        <p style="color: var(--slate-600); max-width: 580px; margin: 0 auto;">
-          An end-to-end automated workflow transforming complex industrial regulations into clear, actionable steps.
-        </p>
-
-        <div class="pipeline-flow">
-          <!-- Step 1 -->
-          <div class="pipeline-step">
-            <div class="pipeline-num">1</div>
-            <div class="pipeline-title">Create Profile</div>
-            <div class="pipeline-desc">Define industry type, scale, state &amp; stage</div>
-          </div>
-
-          <div class="pipeline-arrow">&rarr;</div>
-
-          <!-- Step 2 -->
-          <div class="pipeline-step">
-            <div class="pipeline-num">2</div>
-            <div class="pipeline-title">Identify Requirements</div>
-            <div class="pipeline-desc">Smart engine maps statutory mandates</div>
-          </div>
-
-          <div class="pipeline-arrow">&rarr;</div>
-
-          <!-- Step 3 -->
-          <div class="pipeline-step">
-            <div class="pipeline-num">3</div>
-            <div class="pipeline-title">Track Approvals</div>
-            <div class="pipeline-desc">Monitor Department NOCs &amp; clearances</div>
-          </div>
-
-          <div class="pipeline-arrow">&rarr;</div>
-
-          <!-- Step 4 -->
-          <div class="pipeline-step">
-            <div class="pipeline-num">4</div>
-            <div class="pipeline-title">Monitor Compliance</div>
-            <div class="pipeline-desc">Audit safety, environmental &amp; labour acts</div>
-          </div>
-
-          <div class="pipeline-arrow">&rarr;</div>
-
-          <!-- Step 5 -->
-          <div class="pipeline-step">
-            <div class="pipeline-num">5</div>
-            <div class="pipeline-title">Automate Reminders</div>
-            <div class="pipeline-desc">Proactive alerts &amp; scheme discovery</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- =====================================================================
-           5. SIH STATEMENT TRUST BANNER
-           ===================================================================== -->
-      <section style="background: linear-gradient(135deg, var(--slate-900), var(--primary-950, #0f172a)); color: #ffffff; padding: 2.5rem 2rem; border-radius: var(--radius-xl); margin: 3rem 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem;">
-        <div style="max-width: 680px;">
-          <span style="background-color: rgba(37, 99, 235, 0.3); color: #93c5fd; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: var(--radius-sm); letter-spacing: 0.5px;">
-            PROBLEM STATEMENT SIH26130
-          </span>
-          <h3 style="font-size: 1.5rem; font-weight: 800; margin: 0.75rem 0 0.5rem; color: #ffffff;">
-            Efficiency in streamlining industrial approvals, compliance processes, and access to government support services
+      <!-- Key Modules Grid -->
+      <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        
+        <div class="card" style="margin-bottom: 0;">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.5rem;">
+            📋 Statutory Approvals Catalog
           </h3>
-          <p style="color: var(--slate-300); font-size: 0.925rem; line-height: 1.5;">
-            AlgoRhythms addresses regulatory fragmentation by offering a unified compliance engine, transparent approval tracking, and automated discovery of government incentives.
+          <p style="font-size: 0.88rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 1rem;">
+            Determines central and state approvals applicable to your enterprise, spanning DISH, SPCB (Air/Water acts), Fire Safety, Boiler Inspectorates, and Labour departments.
           </p>
+          <a href="approvals.html" style="font-size: 0.86rem; font-weight: 600;">View Requirements Catalog &rarr;</a>
         </div>
-        <div>
-          <a href="profile.html" class="btn btn-primary btn-lg" style="box-shadow: 0 4px 14px rgba(37,99,235,0.4);">
-            Start Onboarding Form &rarr;
-          </a>
+
+        <div class="card" style="margin-bottom: 0;">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.5rem;">
+            ⚙️ Application Workflow Tracker
+          </h3>
+          <p style="font-size: 0.88rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 1rem;">
+            Tracks applications through transparent stages: <code>DRAFT</code> &rarr; <code>SUBMITTED</code> &rarr; <code>UNDER REVIEW</code> &rarr; <code>CLARIFICATION</code> &rarr; <code>APPROVED</code>.
+          </p>
+          <a href="applications.html" style="font-size: 0.86rem; font-weight: 600;">Track Applications &rarr;</a>
         </div>
+
+        <div class="card" style="margin-bottom: 0;">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.5rem;">
+            🔄 License Renewal Registry
+          </h3>
+          <p style="font-size: 0.88rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 1rem;">
+            When approvals are granted, AnumatiSetu maintains your active license registry, calculates validity countdowns, and alerts you before expiration.
+          </p>
+          <a href="renewals.html" style="font-size: 0.86rem; font-weight: 600;">Manage Renewals &rarr;</a>
+        </div>
+
       </section>
+
     </div>
   </main>
 
   <!-- =========================================================================
-       6. SITE FOOTER
+       3. SITE FOOTER
        ========================================================================= -->
   <footer class="site-footer">
     <div class="app-container">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <h4>Algo<span style="color: var(--primary-600);">Rhythms</span></h4>
-          <p style="font-size: 0.88rem; color: var(--slate-500); margin-bottom: 1rem;">
-            Smart automation for industrial approvals, statutory compliance management, and government support scheme integration.
-          </p>
-          <div style="font-size: 0.75rem; color: var(--slate-400);">
-            Built for Smart India Hackathon &bull; Problem ID: SIH26130
-          </div>
+      <div class="footer-inner">
+        <div>
+          <strong>AnumatiSetu</strong> &bull; Business Compliance &amp; Approval Management Platform
         </div>
-
-        <div class="footer-col">
-          <h5>Platform Modules</h5>
-          <ul class="footer-links">
-            <li><a href="dashboard.html">Central Dashboard</a></li>
-            <li><a href="approvals.html">Approval Tracker</a></li>
-            <li><a href="compliance.html">Compliance Center</a></li>
-            <li><a href="schemes.html">Support Schemes</a></li>
-            <li><a href="profile.html">Industrial Profile</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h5>Compliance Areas</h5>
-          <ul class="footer-links">
-            <li><a href="compliance.html">Factories Act 1948</a></li>
-            <li><a href="compliance.html">SPCB Environmental Consent</a></li>
-            <li><a href="compliance.html">Fire &amp; Emergency Safety</a></li>
-            <li><a href="compliance.html">EPFO &amp; ESIC Labour Acts</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h5>SIH Prototype</h5>
-          <p style="font-size: 0.82rem; color: var(--slate-500); line-height: 1.5; margin-bottom: 0.75rem;">
-            This frontend prototype runs with client-side state and is architected for REST API integration with a Node.js/Express backend.
-          </p>
-          <button class="btn btn-secondary btn-sm" onclick="AlgoDataStore.resetToDefault(); AlgoUI.showToast('Reset data to defaults.', 'info'); setTimeout(()=>location.reload(), 400);">
-            🔄 Reset Demo Data
-          </button>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <div>&copy; 2026 AlgoRhythms &bull; SIH26130 Prototype. All rights reserved.</div>
         <div style="display: flex; gap: 1rem;">
-          <a href="profile.html">Profile Setup</a>
-          <a href="dashboard.html">Live Dashboard</a>
+          <a href="dashboard.html">Dashboard</a>
+          <a href="profile.html">Business Profile</a>
+          <a href="approvals.html">Approvals</a>
+          <a href="applications.html">Applications</a>
+          <a href="documents.html">Documents</a>
+          <a href="renewals.html">Renewals</a>
         </div>
       </div>
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>

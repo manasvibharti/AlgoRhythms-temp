@@ -1,877 +1,389 @@
 /**
  * ============================================================================
- * AlgoRhythms - Smart Industrial Compliance & Approvals Platform
- * SIH26130 Core JavaScript & API Abstraction Layer
+ * AnumatiSetu — Business Compliance & Statutory Approval Platform
+ * Frontend Client Layer & Authentication Bridge
  * ============================================================================
  */
 
-// ----------------------------------------------------------------------------
-// 1. Mock Data Initial Seeds
-// ----------------------------------------------------------------------------
-const DEFAULT_PROFILE = {
-  businessName: "Apex BioTech Solutions Pvt Ltd",
-  industryType: "Manufacturing",
-  businessStage: "Existing Business",
-  location: "Peenya Industrial Estate, Bengaluru",
-  state: "Karnataka",
-  investmentAmount: "₹12.50 Crores",
-  employeesCount: "140",
-  businessCategory: "Medium Enterprise"
-};
+const API_BASE = "http://localhost:4000/api";
+const UPLOADS_BASE = "http://localhost:4000/uploads";
+const TOKEN_KEY = "anumatisetu_auth_token";
 
-const SEED_APPROVALS = [
+// ----------------------------------------------------------------------------
+// 1. Regulatory Requirement Definition Rules (Client Display Catalog)
+// ----------------------------------------------------------------------------
+const STATUTORY_CATALOG = [
   {
-    id: "app-1",
-    title: "Factory Registration & License",
-    category: "Business",
-    department: "Directorate of Industrial Safety & Health (DISH)",
-    status: "Completed",
-    dueDate: "2026-08-12",
-    submissionDate: "2026-07-10",
-    fee: "₹25,000",
-    docsRequired: ["Approved Factory Plan", "Machinery Layout", "Form 2 Application", "NOC from Local Authority"],
-    remarks: "License granted valid for 5 years."
-  },
-  {
-    id: "app-2",
-    title: "Consent to Operate (CTO - Orange Category)",
-    category: "Environment",
-    department: "State Pollution Control Board (SPCB)",
-    status: "Completed",
-    dueDate: "2026-08-15",
-    submissionDate: "2026-07-20",
-    fee: "₹45,000",
-    docsRequired: ["Effluent Treatment Plan (ETP)", "Air Pollution Control System layout", "Form 1 under Water/Air Acts"],
-    remarks: "Consent renewed successfully."
-  },
-  {
-    id: "app-3",
-    title: "Fire Safety NOC",
-    category: "Safety",
-    department: "State Fire and Emergency Services",
-    status: "Pending",
-    dueDate: "2026-09-03",
-    submissionDate: "2026-08-20",
-    fee: "₹15,000",
-    docsRequired: ["Building Blueprint with Fire Exits", "Hydrant Flow Test Report", "Fire Extinguisher Installation Certificate"],
-    remarks: "Physical site inspection scheduled for this week."
-  },
-  {
-    id: "app-4",
-    title: "Contract Labour Registration (Form 1)",
-    category: "Labour",
-    department: "Department of Labour",
-    status: "Pending",
-    dueDate: "2026-09-07",
-    submissionDate: "2026-08-25",
-    fee: "₹5,000",
-    docsRequired: ["Principal Employer Agreement", "Contractor Details", "EPFO/ESIC Registration Proof"],
-    remarks: "Under scrutiny by labour enforcement officer."
-  },
-  {
-    id: "app-5",
-    title: "Annual Factory Renewal Certificate",
-    category: "Renewal",
-    department: "Inspectorate of Factories",
-    status: "Overdue",
-    dueDate: "2026-08-28",
-    submissionDate: "2026-08-27",
-    fee: "₹12,000",
-    docsRequired: ["Annual Return (Form 21)", "Safety Audit Report", "Accident Register Abstract"],
-    remarks: "Action Required: Overdue by 3 days. Penalty of 10% may apply."
-  },
-  {
-    id: "app-6",
-    title: "Hazardous Waste Management Authorization",
-    category: "Environment",
-    department: "State Pollution Control Board (SPCB)",
-    status: "Pending",
-    dueDate: "2026-09-18",
-    submissionDate: "2026-08-22",
-    fee: "₹20,000",
-    docsRequired: ["TSDF Membership Agreement", "Storage Container Specs", "Emergency Response Plan"],
-    remarks: "Awaiting final clearance from SPCB zonal committee."
-  },
-  {
-    id: "app-7",
+    code: "REQ_TRADE_LICENSE",
     title: "Municipal Trade License",
-    category: "Business",
-    department: "Bruhat Bengaluru Mahanagara Palike (BBMP)",
-    status: "Completed",
-    dueDate: "2026-07-05",
-    submissionDate: "2026-06-15",
-    fee: "₹8,000",
-    docsRequired: ["Property Tax Receipt", "Khata Certificate", "Lease Deed"],
-    remarks: "Valid until 31st March 2027."
+    department: "Municipal Corporation / Local Urban Body",
+    category: "General Business",
+    description: "Mandatory operating permit issued by local municipal authorities verifying commercial zoning compliance.",
+    mandatoryDocuments: ["Property Tax Receipt or Lease Deed", "Identity & Address Proof of Proprietor/Directors", "Sanctioned Building Layout"],
+    inspectionRequired: false,
+    validityYears: 1,
+    feeEstimate: "₹5,000 – ₹10,000"
   },
   {
-    id: "app-8",
-    title: "Industrial Boiler Inspection Certificate",
-    category: "Safety",
-    department: "Directorate of Boilers",
-    status: "Completed",
-    dueDate: "2026-07-20",
-    submissionDate: "2026-06-30",
-    fee: "₹18,000",
-    docsRequired: ["Hydraulic Pressure Test Report", "Welder Qualifications", "Steam Piping Layout"],
-    remarks: "Certified safe for operation under Indian Boiler Regulations."
+    code: "REQ_FIRE_NOC",
+    title: "Fire Safety Certificate (NOC)",
+    department: "State Fire and Emergency Services Department",
+    category: "Safety & Hazard",
+    description: "Statutory clearance certifying premises compliance with the National Building Code (NBC) fire protection measures.",
+    mandatoryDocuments: ["Architectural Fire Evacuation Plan", "Hydrant & Sprinkler Test Certificates", "Fire Extinguisher Installation Audit"],
+    inspectionRequired: true,
+    validityYears: 3,
+    feeEstimate: "₹10,000 – ₹25,000"
   },
   {
-    id: "app-9",
-    title: "High Tension (HT) Electricity Load Clearance",
+    code: "REQ_BUILDING_SANCTION",
+    title: "Industrial Building Plan Sanction & Occupancy",
+    department: "Industrial Area Development Board / Town Planning Authority",
     category: "Infrastructure",
-    department: "State Electricity Supply Company (BESCOM)",
-    status: "Completed",
-    dueDate: "2026-06-10",
-    submissionDate: "2026-05-12",
-    fee: "₹50,000",
-    docsRequired: ["Transformer Test Report", "Chief Electrical Inspectorate Clearance", "Sanctioned Load Agreement"],
-    remarks: "250 kVA sanctioned & energized."
+    description: "Formal sanction of industrial civil structures ensuring structural stability and zoning clearances.",
+    mandatoryDocuments: ["Structural Stability Certificate by Chartered Engineer", "Site Elevation & Cross-Section Blueprints", "Land Allotment Order"],
+    inspectionRequired: true,
+    validityYears: 5,
+    feeEstimate: "₹25,000 – ₹75,000"
   },
   {
-    id: "app-10",
-    title: "Groundwater Extraction NOC",
+    code: "REQ_FACTORIES_LICENSE",
+    title: "Factory Registration & License (Form 2)",
+    department: "Directorate of Industrial Safety & Health (DISH)",
+    category: "Labour & Safety",
+    description: "Mandatory factory operating license under the Factories Act, 1948 for manufacturing establishments.",
+    mandatoryDocuments: ["Approved Factory Plan Drawing", "Machinery Horsepower Schedule", "Ventilation & Lighting Certificate", "Safety Officer Appointment Proof"],
+    inspectionRequired: true,
+    validityYears: 5,
+    feeEstimate: "₹15,000 – ₹40,000"
+  },
+  {
+    code: "REQ_SPCB_CTE_CTO",
+    title: "Pollution Consent to Operate (CTO - Air & Water Acts)",
+    department: "State Pollution Control Board (SPCB)",
     category: "Environment",
-    department: "Central Ground Water Authority (CGWA)",
-    status: "Overdue",
-    dueDate: "2026-08-25",
-    submissionDate: "2026-08-15",
-    fee: "₹10,000",
-    docsRequired: ["Rainwater Harvesting Audit", "Digital Flow Meter Calibration Record", "Hydrogeological Report"],
-    remarks: "Digital flow meter telemetry compliance pending submission."
+    description: "Statutory environmental consent under Section 25/26 of Water Act 1974 and Section 21 of Air Act 1981.",
+    mandatoryDocuments: ["Effluent Treatment Plant (ETP) / STP Schematics", "Air Pollution Control Equipment Details", "Raw Material Mass Balance Flowsheet", "Ambient Air & Effluent Lab Test Reports"],
+    inspectionRequired: true,
+    validityYears: 3,
+    feeEstimate: "₹20,000 – ₹60,000"
   },
   {
-    id: "app-11",
-    title: "Weights & Measures Verification Certificate",
-    category: "Business",
-    department: "Department of Legal Metrology",
-    status: "Completed",
-    dueDate: "2026-08-02",
-    submissionDate: "2026-07-15",
-    fee: "₹3,500",
-    docsRequired: ["Weighbridge Calibration Certificate", "Model Approval Document"],
-    remarks: "Stamping done on all 4 platform scales."
+    code: "REQ_EPFO_REG",
+    title: "EPFO Employer Registration & Compliance Code",
+    department: "Employees' Provident Fund Organisation (Ministry of Labour)",
+    category: "Labour Welfare",
+    description: "Mandatory provident fund registration under the Employees' Provident Funds & Miscellaneous Provisions Act, 1952.",
+    mandatoryDocuments: ["Certificate of Incorporation / Partnership Deed", "PAN & GST Registration Proof", "List of First 20 Covered Employees", "Bank Account Cancelled Cheque"],
+    inspectionRequired: false,
+    validityYears: 10,
+    feeEstimate: "Nil (Statutory Free Filing)"
   },
   {
-    id: "app-12",
-    title: "Building Occupancy & Plan Sanction",
-    category: "Safety",
-    department: "Industrial Area Development Board (KIADB)",
-    status: "Completed",
-    dueDate: "2026-01-15",
-    submissionDate: "2025-11-20",
-    fee: "₹75,000",
-    docsRequired: ["Architectural Structural Stability Certificate", "As-Built Drawings"],
-    remarks: "Permanent occupancy certificate issued."
-  }
-];
-
-const SEED_COMPLIANCE = [
-  // Business Compliance
-  {
-    id: "comp-1",
-    category: "Business Compliance",
-    title: "Annual Return Filing (Form 21 / Factories Act)",
-    act: "Factories Act, 1948",
-    status: "Overdue",
-    dueDate: "2026-08-28",
-    daysLeft: -3,
-    description: "Mandatory annual submission of worker hours, leave with wages, and safety committee minutes to DISH.",
-    risk: "High",
-    actionText: "File Return"
+    code: "REQ_ESIC_REG",
+    title: "ESIC Employer Registration Code",
+    department: "Employees' State Insurance Corporation (ESIC)",
+    category: "Labour Welfare",
+    description: "Mandatory healthcare and disability insurance registration under the Employees' State Insurance Act, 1948.",
+    mandatoryDocuments: ["Attendance Register Abstract", "Salary Wage Register", "List of Covered Employees", "Factory/Shop License Copy"],
+    inspectionRequired: false,
+    validityYears: 10,
+    feeEstimate: "Nil (Statutory Free Filing)"
   },
   {
-    id: "comp-2",
-    category: "Business Compliance",
-    title: "GST Annual Filing & Reconciliation (GSTR-9)",
-    act: "CGST Act, 2017",
-    status: "Pending",
-    dueDate: "2026-09-30",
-    daysLeft: 30,
-    description: "Annual consolidated tax return detailing outward/inward supplies and ITC credits.",
-    risk: "Medium",
-    actionText: "Upload Docs"
+    code: "REQ_BOILER_CERT",
+    title: "Industrial Boiler Operation Certificate",
+    department: "Directorate of Steam Boilers",
+    category: "Safety & Hazard",
+    description: "Statutory annual certificate under Indian Boiler Regulations (IBR) certifying safety of high-pressure vessels.",
+    mandatoryDocuments: ["Hydraulic Pressure Test Inspection Report", "Certified Boiler Attendant License", "Steam Piping Isometric Drawings"],
+    inspectionRequired: true,
+    validityYears: 1,
+    feeEstimate: "₹12,000 – ₹30,000"
   },
   {
-    id: "comp-3",
-    category: "Business Compliance",
-    title: "MSME Udyam Registration Annual Validation",
-    act: "MSMED Act, 2006",
-    status: "Completed",
-    dueDate: "2026-06-30",
-    daysLeft: 0,
-    description: "Turnover and investment auto-reconciliation with ITR and GSTN data.",
-    risk: "Low",
-    actionText: "View Certificate"
-  },
-
-  // Environmental Compliance
-  {
-    id: "comp-4",
-    category: "Environmental Compliance",
-    title: "SPCB Environmental Statement (Form V)",
-    act: "Environment (Protection) Act, 1986",
-    status: "Pending",
-    dueDate: "2026-09-30",
-    daysLeft: 30,
-    description: "Annual audit report detailing raw material usage, water consumption, and pollution loads.",
-    risk: "Medium",
-    actionText: "Submit Audit"
+    code: "REQ_FSSAI_LICENSE",
+    title: "FSSAI Food Business Manufacturing License",
+    department: "Food Safety and Standards Authority of India (FSSAI)",
+    category: "Food Safety",
+    description: "Central or State statutory food safety license under the Food Safety and Standards Act, 2006.",
+    mandatoryDocuments: ["Food Safety Management System (FSMS) Plan", "Water Potability Test Report", "Equipment Layout & Capacity Breakdown", "Recall Management Protocol"],
+    inspectionRequired: true,
+    validityYears: 3,
+    feeEstimate: "₹7,500 – ₹15,000"
   },
   {
-    id: "comp-5",
-    category: "Environmental Compliance",
-    title: "Monthly Effluent Analysis Report",
-    act: "Water (Prevention & Control of Pollution) Act, 1974",
-    status: "Completed",
-    dueDate: "2026-08-10",
-    daysLeft: 0,
-    description: "NABL lab testing of treated wastewater parameters (BOD, COD, TSS).",
-    risk: "Low",
-    actionText: "View Report"
-  },
-  {
-    id: "comp-6",
-    category: "Environmental Compliance",
-    title: "Hazardous Waste Manifest (Form 10)",
-    act: "Hazardous & Other Wastes Rules, 2016",
-    status: "Completed",
-    dueDate: "2026-08-20",
-    daysLeft: 0,
-    description: "Consignment tracking copy for safe disposal at authorized TSDF site.",
-    risk: "Low",
-    actionText: "View Manifest"
-  },
-  {
-    id: "comp-7",
-    category: "Environmental Compliance",
-    title: "Groundwater Digital Meter Log Submission",
-    act: "Central Ground Water Authority Guidelines",
-    status: "Overdue",
-    dueDate: "2026-08-25",
-    daysLeft: -6,
-    description: "Daily telemetry log upload of industrial water drawal from on-premise borewells.",
-    risk: "High",
-    actionText: "Upload Telemetry"
-  },
-
-  // Safety Compliance
-  {
-    id: "comp-8",
-    category: "Safety Compliance",
-    title: "Quarterly Fire Extinguisher & Hydrant Audit",
-    act: "National Building Code & Fire Safety Rules",
-    status: "Pending",
-    dueDate: "2026-09-03",
-    daysLeft: 3,
-    description: "Functional inspection of 32 ABC dry-powder cylinders and perimeter hose reels.",
-    risk: "High",
-    actionText: "Schedule Inspection"
-  },
-  {
-    id: "comp-9",
-    category: "Safety Compliance",
-    title: "Annual Structural Stability Certification",
-    act: "State Factory Rules",
-    status: "Completed",
-    dueDate: "2026-05-15",
-    daysLeft: 0,
-    description: "Competent person structural test certificate for manufacturing shed and overhead cranes.",
-    risk: "Low",
-    actionText: "View Certificate"
-  },
-  {
-    id: "comp-10",
-    category: "Safety Compliance",
-    title: "Personal Protective Equipment (PPE) Compliance Register",
-    act: "Factories Act, 1948 Section 41",
-    status: "Completed",
-    dueDate: "2026-08-01",
-    daysLeft: 0,
-    description: "Bi-monthly issue and safety drill verification logs for shopfloor staff.",
-    risk: "Low",
-    actionText: "View Register"
-  },
-
-  // Labour Compliance
-  {
-    id: "comp-11",
-    category: "Labour Compliance",
-    title: "Monthly EPF & MP Remittance (ECR Return)",
-    act: "Employees' Provident Funds Act, 1952",
-    status: "Completed",
-    dueDate: "2026-08-15",
-    daysLeft: 0,
-    description: "Electronic Challan cum Return filing and payment for 140 covered employees.",
-    risk: "Low",
-    actionText: "Challan Receipt"
-  },
-  {
-    id: "comp-12",
-    category: "Labour Compliance",
-    title: "Monthly ESIC Contribution Return",
-    act: "Employees' State Insurance Act, 1948",
-    status: "Completed",
-    dueDate: "2026-08-15",
-    daysLeft: 0,
-    description: "Monthly medical and sickness benefit contributions for eligible factory workers.",
-    risk: "Low",
-    actionText: "View Receipt"
-  },
-  {
-    id: "comp-13",
-    category: "Labour Compliance",
-    title: "Annual POSH Internal Committee Report Filing",
-    act: "Sexual Harassment of Women at Workplace Act, 2013",
-    status: "Pending",
-    dueDate: "2026-10-15",
-    daysLeft: 45,
-    description: "Annual summary of gender sensitization workshops and complaint redressals.",
-    risk: "Low",
-    actionText: "Prepare Draft"
-  },
-  {
-    id: "comp-14",
-    category: "Labour Compliance",
-    title: "Contract Labour Register & Half-Yearly Return",
-    act: "Contract Labour (Regulation & Abolition) Act, 1970",
-    status: "Pending",
-    dueDate: "2026-09-07",
-    daysLeft: 7,
-    description: "Submission of Form XXIV half-yearly return to licensing officer.",
-    risk: "Medium",
-    actionText: "Upload Return"
-  }
-];
-
-const SEED_SCHEMES = [
-  {
-    id: "scheme-1",
-    name: "Production Linked Incentive (PLI) Scheme",
-    category: "Manufacturing",
-    nodalMinistry: "Ministry of Heavy Industries / DPIIT",
-    eligibilityMatch: "High Match (94%)",
-    benefit: "4% to 6% incentive on incremental turnover over 5 years",
-    description: "Designed to boost domestic manufacturing and attract investments in priority sectors. Suited for expansion phase enterprises.",
-    keyCriteria: ["Manufacturing unit", "Minimum incremental investment of ₹5 Cr", "Turnover growth threshold"],
-    applicationMode: "Online via National Single Window System (NSWS)"
-  },
-  {
-    id: "scheme-2",
-    name: "MSME Credit Linked Capital Subsidy Scheme (CLCSS)",
-    category: "MSME",
-    nodalMinistry: "Ministry of MSME",
-    eligibilityMatch: "High Match (91%)",
-    benefit: "15% upfront capital subsidy (up to ₹15 Lakhs) for tech modernization",
-    description: "Aims to facilitate technology upgradation in micro and small/medium enterprises by providing institutional finance.",
-    keyCriteria: ["Registered Udyam MSME", "Approved machinery tech list", "Institutional bank loan"],
-    applicationMode: "Through nodal banks (SIDBI / NABARD)"
-  },
-  {
-    id: "scheme-3",
-    name: "Zero Defect Zero Effect (ZED) Certification Incentive",
-    category: "Technology",
-    nodalMinistry: "Quality Council of India (QCI)",
-    eligibilityMatch: "Medium Match (85%)",
-    benefit: "Up to 80% subsidy on certification cost + ₹5 Lakhs for technology handholding",
-    description: "Enables MSMEs to adopt clean technologies and minimize environmental footprint while maximizing output quality.",
-    keyCriteria: ["Valid Udyam Registration", "Completion of ZED self-assessment", "Desktop verification"],
-    applicationMode: "Direct online via ZED Portal"
-  },
-  {
-    id: "scheme-4",
-    name: "National Apprenticeship Promotion Scheme (NAPS-2)",
-    category: "Employment",
-    nodalMinistry: "Ministry of Skill Development and Entrepreneurship",
-    eligibilityMatch: "High Match (96%)",
-    benefit: "₹1,500/month stipend reimbursement per apprentice + exemption from select cess",
-    description: "Provides financial incentives to manufacturing establishments to engage apprentices and build skilled industrial workforce.",
-    keyCriteria: ["Minimum 30 employees", "EPFO/ESIC compliant establishment", "Valid trade apprentice curriculum"],
-    applicationMode: "Apprenticeship India Portal"
-  },
-  {
-    id: "scheme-5",
-    name: "Technology Upgradation Fund Scheme (ATUFS)",
-    category: "Expansion",
-    nodalMinistry: "Ministry of Textiles / Commerce",
-    eligibilityMatch: "Medium Match (80%)",
-    benefit: "10% to 15% Capital Investment Subsidy (CIS) on benchmarked machinery",
-    description: "Facilitates induction of state-of-the-art technology to enhance productivity and export competitiveness.",
-    keyCriteria: ["New plant machinery procurement", "Energy-efficient machinery compliance", "Commercial production in 18 months"],
-    applicationMode: "i-TUFS Portal"
-  },
-  {
-    id: "scheme-6",
-    name: "Green Energy Open Access & Rooftop Solar Subsidy",
-    category: "Manufacturing",
-    nodalMinistry: "Ministry of New and Renewable Energy (MNRE)",
-    eligibilityMatch: "High Match (88%)",
-    benefit: "30% capital subsidy on rooftop solar + 50% waiver on transmission charges",
-    description: "Empowers commercial and industrial (C&I) consumers to adopt captive renewable energy and reduce operating power tariffs.",
-    keyCriteria: ["Connected load > 100 kW", "Roof stability certification", "Net metering agreement with DISCOM"],
-    applicationMode: "State Renewable Energy Agency Portal"
-  }
-];
-
-const SEED_NOTIFICATIONS = [
-  {
-    id: "notif-1",
-    title: "Fire NOC inspection approaching",
-    message: "State Fire & Emergency Services has scheduled site audit for 3rd September 2026.",
-    type: "warning",
-    timeAgo: "2 hours ago",
-    read: false
-  },
-  {
-    id: "notif-2",
-    title: "Annual Compliance Filing is Overdue",
-    message: "Factories Act Form 21 return deadline expired on 28 Aug. Please submit immediately to avoid penalty.",
-    type: "danger",
-    timeAgo: "1 day ago",
-    read: false
-  },
-  {
-    id: "notif-3",
-    title: "New Support Scheme Match Identified",
-    message: "Your profile qualifies for the 15% MSME CLCSS Tech Upgradation Capital Subsidy.",
-    type: "info",
-    timeAgo: "2 days ago",
-    read: false
-  },
-  {
-    id: "notif-4",
-    title: "Pollution Consent (CTO) Verified",
-    message: "SPCB has approved your renewed Consent to Operate for Orange Category manufacturing.",
-    type: "success",
-    timeAgo: "3 days ago",
-    read: true
-  },
-  {
-    id: "notif-5",
-    title: "Groundwater extraction log overdue",
-    message: "Digital meter telemetry upload for CGWA is overdue by 6 days.",
-    type: "danger",
-    timeAgo: "4 days ago",
-    read: true
-  }
-];
-
-const SEED_ACTIVITIES = [
-  {
-    title: "Consent to Operate (CTO) renewed by SPCB",
-    category: "Environment",
-    timestamp: "31 Aug 2026, 04:30 PM",
-    icon: "✓"
-  },
-  {
-    title: "Fire safety hydrant flow test report uploaded",
-    category: "Safety",
-    timestamp: "30 Aug 2026, 11:15 AM",
-    icon: "📄"
-  },
-  {
-    title: "EPFO monthly ECR remittance successfully submitted",
-    category: "Labour",
-    timestamp: "28 Aug 2026, 02:40 PM",
-    icon: "✓"
-  },
-  {
-    title: "Automated alert generated: Annual Factory Renewal pending",
-    category: "Automation",
-    timestamp: "27 Aug 2026, 09:00 AM",
-    icon: "⚠️"
-  },
-  {
-    title: "Profile updated: Medium Enterprise Classification confirmed",
-    category: "Profile",
-    timestamp: "25 Aug 2026, 06:10 PM",
-    icon: "⚙️"
+    code: "REQ_PESO_LICENSE",
+    title: "PESO Hazardous Chemical & Petroleum Storage License",
+    department: "Petroleum & Explosives Safety Organisation (PESO)",
+    category: "Safety & Hazard",
+    description: "Statutory approval under Petroleum Rules & Static and Mobile Pressure Vessels (SMPV) Rules.",
+    mandatoryDocuments: ["Storage Tank Fabrication Drawings", "Flameproof Equipment Test Certificates", "On-site Emergency Disaster Management Plan"],
+    inspectionRequired: true,
+    validityYears: 3,
+    feeEstimate: "₹25,000 – ₹50,000"
   }
 ];
 
 // ----------------------------------------------------------------------------
-// 2. Data Store & LocalStorage Manager (State Layer)
+// 2. API Service Layer (Authenticated Backend Calls)
 // ----------------------------------------------------------------------------
-const STORAGE_KEYS = {
-  PROFILE: "algorhythms_profile",
-  APPROVALS: "algorhythms_approvals",
-  COMPLIANCE: "algorhythms_compliance",
-  SCHEMES: "algorhythms_schemes",
-  NOTIFICATIONS: "algorhythms_notifications",
-  ACTIVITIES: "algorhythms_activities"
-};
-
-class AlgoDataStore {
-  static init() {
-    if (!localStorage.getItem(STORAGE_KEYS.PROFILE)) {
-      localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(DEFAULT_PROFILE));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.APPROVALS)) {
-      localStorage.setItem(STORAGE_KEYS.APPROVALS, JSON.stringify(SEED_APPROVALS));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.COMPLIANCE)) {
-      localStorage.setItem(STORAGE_KEYS.COMPLIANCE, JSON.stringify(SEED_COMPLIANCE));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.SCHEMES)) {
-      localStorage.setItem(STORAGE_KEYS.SCHEMES, JSON.stringify(SEED_SCHEMES));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS)) {
-      localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(SEED_NOTIFICATIONS));
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.ACTIVITIES)) {
-      localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(SEED_ACTIVITIES));
-    }
-  }
-
-  static getProfile() {
-    this.init();
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEYS.PROFILE)) || DEFAULT_PROFILE;
-    } catch (e) {
-      return DEFAULT_PROFILE;
-    }
-  }
-
-  static saveProfile(profile) {
-    localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
-    this.generateRequirementsForProfile(profile);
-  }
-
-  static getApprovals() {
-    this.init();
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEYS.APPROVALS)) || SEED_APPROVALS;
-    } catch (e) {
-      return SEED_APPROVALS;
-    }
-  }
-
-  static saveApprovals(approvals) {
-    localStorage.setItem(STORAGE_KEYS.APPROVALS, JSON.stringify(approvals));
-  }
-
-  static getCompliance() {
-    this.init();
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEYS.COMPLIANCE)) || SEED_COMPLIANCE;
-    } catch (e) {
-      return SEED_COMPLIANCE;
-    }
-  }
-
-  static saveCompliance(compliance) {
-    localStorage.setItem(STORAGE_KEYS.COMPLIANCE, JSON.stringify(compliance));
-  }
-
-  static getSchemes() {
-    this.init();
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEYS.SCHEMES)) || SEED_SCHEMES;
-    } catch (e) {
-      return SEED_SCHEMES;
-    }
-  }
-
-  static getNotifications() {
-    this.init();
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS)) || SEED_NOTIFICATIONS;
-    } catch (e) {
-      return SEED_NOTIFICATIONS;
-    }
-  }
-
-  static saveNotifications(notifications) {
-    localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
-  }
-
-  static getActivities() {
-    this.init();
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEYS.ACTIVITIES)) || SEED_ACTIVITIES;
-    } catch (e) {
-      return SEED_ACTIVITIES;
-    }
-  }
-
-  static logActivity(title, category, icon = "✓") {
-    const activities = this.getActivities();
-    const newAct = {
-      title,
-      category,
-      timestamp: "Just now",
-      icon
-    };
-    activities.unshift(newAct);
-    if (activities.length > 15) activities.pop();
-    localStorage.setItem(STORAGE_KEYS.ACTIVITIES, JSON.stringify(activities));
-  }
-
-  // Dynamic Rule Engine: Adjust requirements based on Industry Type & Stage
-  static generateRequirementsForProfile(profile) {
-    const baseApprovals = JSON.parse(JSON.stringify(SEED_APPROVALS));
-    const baseCompliance = JSON.parse(JSON.stringify(SEED_COMPLIANCE));
-
-    // Customization based on industry type
-    if (profile.industryType === "Food Processing") {
-      baseApprovals.unshift({
-        id: "app-custom-1",
-        title: "FSSAI Central Manufacturing License",
-        category: "Food Safety",
-        department: "Food Safety and Standards Authority of India",
-        status: "Pending",
-        dueDate: "2026-09-12",
-        submissionDate: "2026-08-28",
-        fee: "₹7,500",
-        docsRequired: ["FSMS Plan", "Water Potability Report", "Recall Plan", "Food Analyst Report"],
-        remarks: "Food testing facility inspection pending."
-      });
-      baseCompliance.unshift({
-        id: "comp-custom-1",
-        category: "Safety Compliance",
-        title: "Food Safety Management System (FSMS) Audit",
-        act: "Food Safety and Standards Act, 2006",
-        status: "Pending",
-        dueDate: "2026-09-15",
-        daysLeft: 15,
-        description: "Quarterly hygiene rating and pesticide residue verification audit.",
-        risk: "High",
-        actionText: "Upload Audit"
-      });
-    } else if (profile.industryType === "Chemicals") {
-      baseApprovals.unshift({
-        id: "app-custom-2",
-        title: "Petroleum & Explosives Safety Org (PESO) License",
-        category: "Hazmat",
-        department: "PESO / Ministry of Commerce",
-        status: "Pending",
-        dueDate: "2026-09-10",
-        submissionDate: "2026-08-25",
-        fee: "₹30,000",
-        docsRequired: ["Hazchem Storage Drawing", "Flameproof Equipment Certificate", "Disaster Management Plan"],
-        remarks: "Site scrutiny in progress by PESO Nagpur."
-      });
-    } else if (profile.industryType === "Textile") {
-      baseApprovals.unshift({
-        id: "app-custom-3",
-        title: "Zero Liquid Discharge (ZLD) Compliance Verification",
-        category: "Environment",
-        department: "State Pollution Control Board",
-        status: "Pending",
-        dueDate: "2026-09-14",
-        submissionDate: "2026-08-26",
-        fee: "₹22,000",
-        docsRequired: ["RO & Multi-Effect Evaporator Telemetry", "Reject Salt Disposal Proof"],
-        remarks: "Online effluent monitoring system calibration."
-      });
-    }
-
-    if (profile.businessStage === "New Setup") {
-      // In new setup, more items are pending
-      baseApprovals.forEach((app, idx) => {
-        if (idx > 4 && app.status === "Completed") {
-          app.status = "Pending";
-        }
-      });
-    }
-
-    this.saveApprovals(baseApprovals);
-    this.saveCompliance(baseCompliance);
-    this.logActivity(`Generated smart requirements for ${profile.businessName} (${profile.industryType})`, "Profile", "⚡");
-  }
-
-  // Calculate live statistics
-  static getMetrics() {
-    const approvals = this.getApprovals();
-    const compliance = this.getCompliance();
-
-    const totalRequirements = approvals.length;
-    const completedCount = approvals.filter(a => a.status === "Completed").length;
-    const pendingCount = approvals.filter(a => a.status === "Pending").length;
-    const overdueCount = approvals.filter(a => a.status === "Overdue").length;
-
-    // Overall compliance rate calculated across all compliance items
-    const compTotal = compliance.length;
-    const compCompleted = compliance.filter(c => c.status === "Completed").length;
-    const compPending = compliance.filter(c => c.status === "Pending").length;
-    const compOverdue = compliance.filter(c => c.status === "Overdue").length;
-
-    // Weighted compliance score
-    const complianceRate = compTotal > 0 ? Math.round(((compCompleted + compPending * 0.45) / compTotal) * 100) : 78;
-
-    return {
-      total: totalRequirements,
-      completed: completedCount,
-      pending: pendingCount,
-      overdue: overdueCount,
-      complianceRate: complianceRate || 78,
-      compTotal,
-      compCompleted,
-      compPending,
-      compOverdue
-    };
-  }
-
-  static resetToDefault() {
-    localStorage.removeItem(STORAGE_KEYS.PROFILE);
-    localStorage.removeItem(STORAGE_KEYS.APPROVALS);
-    localStorage.removeItem(STORAGE_KEYS.COMPLIANCE);
-    localStorage.removeItem(STORAGE_KEYS.SCHEMES);
-    localStorage.removeItem(STORAGE_KEYS.NOTIFICATIONS);
-    localStorage.removeItem(STORAGE_KEYS.ACTIVITIES);
-    this.init();
-  }
-}
-
-// ----------------------------------------------------------------------------
-// 3. API Abstraction Layer (Bridge for Future Node/Express Backend)
-// ----------------------------------------------------------------------------
-/**
- * In this prototype, ApiService functions return Promises backed by AlgoDataStore.
- * To integrate with a real Node.js/Express backend later, simply replace the internal
- * AlgoDataStore calls with `return fetch('/api/...')` requests.
- */
 const ApiService = {
-  // GET /api/profile
-  async getProfile() {
-    return Promise.resolve(AlgoDataStore.getProfile());
+  getToken() {
+    return localStorage.getItem(TOKEN_KEY);
   },
 
-  // POST /api/profile
-  async saveProfile(profileData) {
-    AlgoDataStore.saveProfile(profileData);
-    return Promise.resolve({ success: true, message: "Profile saved successfully.", profile: profileData });
+  setToken(token) {
+    if (token) localStorage.setItem(TOKEN_KEY, token);
+    else localStorage.removeItem(TOKEN_KEY);
   },
 
-  // GET /api/approvals?status=...&category=...
-  async getApprovals(filters = {}) {
-    let approvals = AlgoDataStore.getApprovals();
-    if (filters.status && filters.status !== "All") {
-      approvals = approvals.filter(a => a.status.toLowerCase() === filters.status.toLowerCase());
-    }
-    if (filters.category && filters.category !== "All") {
-      approvals = approvals.filter(a => a.category.toLowerCase() === filters.category.toLowerCase());
-    }
-    if (filters.search) {
-      const q = filters.search.toLowerCase();
-      approvals = approvals.filter(a => 
-        a.title.toLowerCase().includes(q) || 
-        a.department.toLowerCase().includes(q) || 
-        a.category.toLowerCase().includes(q)
-      );
-    }
-    return Promise.resolve(approvals);
+  getAuthHeaders(includeContentType = true) {
+    const headers = {};
+    const token = this.getToken();
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    if (includeContentType) headers["Content-Type"] = "application/json";
+    return headers;
   },
 
-  // GET /api/approvals/:id
-  async getApprovalById(id) {
-    const approvals = AlgoDataStore.getApprovals();
-    const item = approvals.find(a => a.id === id);
-    return Promise.resolve(item || null);
-  },
-
-  // PATCH /api/approvals/:id
-  async updateApprovalStatus(id, newStatus) {
-    const approvals = AlgoDataStore.getApprovals();
-    const target = approvals.find(a => a.id === id);
-    if (target) {
-      target.status = newStatus;
-      AlgoDataStore.saveApprovals(approvals);
-      AlgoDataStore.logActivity(`Status updated for "${target.title}" to ${newStatus}`, "Approvals", "🔄");
-      return Promise.resolve({ success: true, item: target });
-    }
-    return Promise.reject(new Error("Approval item not found"));
-  },
-
-  // GET /api/compliance
-  async getCompliance(category = "All") {
-    let list = AlgoDataStore.getCompliance();
-    if (category && category !== "All") {
-      list = list.filter(c => c.category.toLowerCase() === category.toLowerCase());
-    }
-    return Promise.resolve(list);
-  },
-
-  // PATCH /api/compliance/:id
-  async updateComplianceStatus(id, newStatus) {
-    const list = AlgoDataStore.getCompliance();
-    const target = list.find(c => c.id === id);
-    if (target) {
-      target.status = newStatus;
-      AlgoDataStore.saveCompliance(list);
-      AlgoDataStore.logActivity(`Compliance "${target.title}" marked as ${newStatus}`, "Compliance", "✓");
-      return Promise.resolve({ success: true, item: target });
-    }
-    return Promise.reject(new Error("Compliance item not found"));
-  },
-
-  // GET /api/schemes
-  async getSchemes(filters = {}) {
-    let list = AlgoDataStore.getSchemes();
-    if (filters.category && filters.category !== "All") {
-      list = list.filter(s => s.category.toLowerCase() === filters.category.toLowerCase());
-    }
-    if (filters.search) {
-      const q = filters.search.toLowerCase();
-      list = list.filter(s => 
-        s.name.toLowerCase().includes(q) || 
-        s.description.toLowerCase().includes(q) || 
-        s.nodalMinistry.toLowerCase().includes(q)
-      );
-    }
-    return Promise.resolve(list);
-  },
-
-  // GET /api/dashboard
-  async getDashboardData() {
-    const profile = AlgoDataStore.getProfile();
-    const metrics = AlgoDataStore.getMetrics();
-    const approvals = AlgoDataStore.getApprovals();
-    const compliance = AlgoDataStore.getCompliance();
-    const notifications = AlgoDataStore.getNotifications();
-    const activities = AlgoDataStore.getActivities();
-
-    return Promise.resolve({
-      profile,
-      metrics,
-      approvalsOverview: approvals.slice(0, 5),
-      upcomingActions: compliance.filter(c => c.status !== "Completed").slice(0, 3),
-      automationAlerts: notifications.filter(n => n.type === "warning" || n.type === "danger").slice(0, 3),
-      recentActivities: activities.slice(0, 5)
+  async register(email, password, businessName) {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, businessName })
     });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Registration failed");
+    this.setToken(data.token);
+    return data;
   },
 
-  // GET /api/notifications
-  async getNotifications() {
-    return Promise.resolve(AlgoDataStore.getNotifications());
+  async login(email, password) {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Login failed");
+    this.setToken(data.token);
+    return data;
   },
 
-  // POST /api/notifications/mark-read
+  async logout() {
+    try {
+      if (this.getToken()) {
+        await fetch(`${API_BASE}/auth/logout`, {
+          method: "POST",
+          headers: this.getAuthHeaders()
+        });
+      }
+    } catch (e) {}
+    this.setToken(null);
+  },
+
+  async getCurrentUser() {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const res = await fetch(`${API_BASE}/auth/me`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) {
+        if (res.status === 401) this.setToken(null);
+        return null;
+      }
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async getProfile() {
+    try {
+      const res = await fetch(`${API_BASE}/profile`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async saveProfile(profileData) {
+    const hasToken = !!this.getToken();
+    const url = hasToken ? `${API_BASE}/profile` : `${API_BASE}/auth/register-and-profile`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify(profileData)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to save profile");
+    if (data.token) {
+      this.setToken(data.token);
+    }
+    return data;
+  },
+
+  async getRequirements() {
+    try {
+      const res = await fetch(`${API_BASE}/profile/requirements`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) return [];
+      return await res.json();
+    } catch (e) {
+      return [];
+    }
+  },
+
+  async getApplications(filterStatus = "ALL") {
+    try {
+      const url = filterStatus && filterStatus !== "ALL"
+        ? `${API_BASE}/applications?status=${encodeURIComponent(filterStatus)}`
+        : `${API_BASE}/applications`;
+      const res = await fetch(url, { headers: this.getAuthHeaders() });
+      if (!res.ok) return [];
+      return await res.json();
+    } catch (e) {
+      return [];
+    }
+  },
+
+  async getApplicationById(id) {
+    try {
+      const res = await fetch(`${API_BASE}/applications/${encodeURIComponent(id)}`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async createApplication(requirementCode, notes = "") {
+    const res = await fetch(`${API_BASE}/applications`, {
+      method: "POST",
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify({ requirementCode, notes })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to create application");
+    return data;
+  },
+
+  async updateApplicationStatus(appId, newStatus, extraData = {}) {
+    const res = await fetch(`${API_BASE}/applications/${encodeURIComponent(appId)}/status`, {
+      method: "PATCH",
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify({ status: newStatus, ...extraData })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to update status");
+    return data;
+  },
+
+  async getDocuments() {
+    try {
+      const res = await fetch(`${API_BASE}/documents`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) return [];
+      return await res.json();
+    } catch (e) {
+      return [];
+    }
+  },
+
+  async uploadDocument(formData) {
+    const res = await fetch(`${API_BASE}/documents`, {
+      method: "POST",
+      headers: this.getAuthHeaders(false),
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to upload document");
+    return data;
+  },
+
+  async deleteDocument(docId) {
+    const res = await fetch(`${API_BASE}/documents/${encodeURIComponent(docId)}`, {
+      method: "DELETE",
+      headers: this.getAuthHeaders()
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to delete document");
+    return data;
+  },
+
+  async getRenewals() {
+    try {
+      const res = await fetch(`${API_BASE}/renewals`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) return [];
+      return await res.json();
+    } catch (e) {
+      return [];
+    }
+  },
+
+  async renewLicense(renewalId) {
+    const res = await fetch(`${API_BASE}/renewals/${encodeURIComponent(renewalId)}/renew`, {
+      method: "POST",
+      headers: this.getAuthHeaders()
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to renew license");
+    return data;
+  },
+
+  async getDashboardData() {
+    try {
+      const res = await fetch(`${API_BASE}/dashboard`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Failed to fetch dashboard");
+      return await res.json();
+    } catch (e) {
+      return {
+        metrics: { hasProfile: false, totalRequiredApprovals: 0, activeApplicationsCount: 0, pendingActionsCount: 0, upcomingRenewalsCount: 0, totalApplicationsCount: 0, approvedCount: 0 },
+        recentApplications: [],
+        recentActivities: [],
+        notifications: []
+      };
+    }
+  },
+
   async markAllNotificationsRead() {
-    const notifs = AlgoDataStore.getNotifications();
-    notifs.forEach(n => n.read = true);
-    AlgoDataStore.saveNotifications(notifs);
-    return Promise.resolve({ success: true });
+    try {
+      await fetch(`${API_BASE}/dashboard/notifications/mark-read`, {
+        method: "POST",
+        headers: this.getAuthHeaders()
+      });
+    } catch (e) {}
   }
 };
 
 // ----------------------------------------------------------------------------
-// 4. Global UI Component Helpers & Modals
+// 3. UI Helpers, Dialogs & Auth Modals
 // ----------------------------------------------------------------------------
 const AlgoUI = {
-  // Toast Alert Dispatcher
-  showToast(message, type = "info", duration = 3500) {
-    let container = document.getElementById("algo-toast-container");
+  showToast(message, type = "info", duration = 3000) {
+    let container = document.getElementById("toast-container");
     if (!container) {
       container = document.createElement("div");
-      container.id = "algo-toast-container";
+      container.id = "toast-container";
       container.className = "toast-container";
       document.body.appendChild(container);
     }
 
     const toast = document.createElement("div");
     toast.className = `toast toast-${type}`;
-    
+
     let icon = "ℹ️";
     if (type === "success") icon = "✓";
     if (type === "warning") icon = "⚠️";
@@ -882,36 +394,34 @@ const AlgoUI = {
 
     setTimeout(() => {
       toast.style.opacity = "0";
-      toast.style.transform = "translateX(50px)";
-      toast.style.transition = "all 0.3s ease";
-      setTimeout(() => toast.remove(), 300);
+      toast.style.transform = "translateY(-10px)";
+      toast.style.transition = "all 0.25s ease";
+      setTimeout(() => toast.remove(), 250);
     }, duration);
   },
 
-  // Modal Dialog Controller
   openModal(title, bodyHtml, footerHtml = "") {
-    let overlay = document.getElementById("algo-modal-overlay");
+    let overlay = document.getElementById("modal-overlay");
     if (!overlay) {
       overlay = document.createElement("div");
-      overlay.id = "algo-modal-overlay";
+      overlay.id = "modal-overlay";
       overlay.className = "modal-overlay";
       overlay.innerHTML = `
-        <div class="modal-content" role="dialog" aria-modal="true">
+        <div class="modal-dialog" role="dialog" aria-modal="true">
           <div class="modal-header">
-            <h3 id="algo-modal-title"></h3>
-            <button class="modal-close-btn" id="algo-modal-close" aria-label="Close modal">&times;</button>
+            <h3 id="modal-title"></h3>
+            <button class="modal-close" id="modal-close-btn" aria-label="Close">&times;</button>
           </div>
-          <div class="modal-body" id="algo-modal-body"></div>
-          <div class="modal-footer" id="algo-modal-footer"></div>
+          <div class="modal-body" id="modal-body"></div>
+          <div class="modal-footer" id="modal-footer"></div>
         </div>
       `;
       document.body.appendChild(overlay);
 
-      // Close handlers
       overlay.addEventListener("click", (e) => {
         if (e.target === overlay) AlgoUI.closeModal();
       });
-      document.getElementById("algo-modal-close").addEventListener("click", AlgoUI.closeModal);
+      document.getElementById("modal-close-btn").addEventListener("click", AlgoUI.closeModal);
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && overlay.classList.contains("open")) {
           AlgoUI.closeModal();
@@ -919,10 +429,10 @@ const AlgoUI = {
       });
     }
 
-    document.getElementById("algo-modal-title").textContent = title;
-    document.getElementById("algo-modal-body").innerHTML = bodyHtml;
-    
-    const footerEl = document.getElementById("algo-modal-footer");
+    document.getElementById("modal-title").textContent = title;
+    document.getElementById("modal-body").innerHTML = bodyHtml;
+
+    const footerEl = document.getElementById("modal-footer");
     if (footerHtml) {
       footerEl.innerHTML = footerHtml;
       footerEl.style.display = "flex";
@@ -936,57 +446,226 @@ const AlgoUI = {
   },
 
   closeModal() {
-    const overlay = document.getElementById("algo-modal-overlay");
+    const overlay = document.getElementById("modal-overlay");
     if (overlay) {
       overlay.classList.remove("open");
       document.body.style.overflow = "";
     }
   },
 
-  // Renders standard status badge HTML
-  renderStatusBadge(status) {
-    const s = (status || "").toLowerCase();
-    if (s === "completed") {
-      return `<span class="badge badge-success"><span class="badge-dot"></span>Completed</span>`;
-    } else if (s === "pending") {
-      return `<span class="badge badge-warning"><span class="badge-dot"></span>Pending</span>`;
-    } else if (s === "overdue") {
-      return `<span class="badge badge-danger"><span class="badge-dot"></span>Overdue</span>`;
-    }
-    return `<span class="badge badge-info"><span class="badge-dot"></span>${status}</span>`;
+  openAuthModal(initialTab = "login") {
+    const isLogin = initialTab === "login";
+    const bodyHtml = `
+      <div style="display:flex; flex-direction:column; gap:1.25rem;">
+        <div style="display:flex; border-bottom:1px solid var(--slate-200); margin-bottom:0.5rem;">
+          <button type="button" id="tab-auth-login" class="filter-btn ${isLogin ? 'active' : ''}" style="flex:1; border-radius:0; border-bottom:2px solid ${isLogin ? 'var(--brand-700)' : 'transparent'};">
+            Sign In to Account
+          </button>
+          <button type="button" id="tab-auth-register" class="filter-btn ${!isLogin ? 'active' : ''}" style="flex:1; border-radius:0; border-bottom:2px solid ${!isLogin ? 'var(--brand-700)' : 'transparent'};">
+            Create Enterprise Account
+          </button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="auth-login-form" style="display:${isLogin ? 'flex' : 'none'}; flex-direction:column; gap:1rem;">
+          <div class="form-group">
+            <label class="form-label" for="login-email">Registered Email Address <span class="required">*</span></label>
+            <input type="email" id="login-email" class="form-control" placeholder="entrepreneur@company.com" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="login-password">Password <span class="required">*</span></label>
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="margin-top:0.5rem; justify-content:center;">
+            Sign In to AnumatiSetu →
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="auth-register-form" style="display:${!isLogin ? 'flex' : 'none'}; flex-direction:column; gap:1rem;">
+          <div class="form-group">
+            <label class="form-label" for="reg-biz-name">Enterprise / Entity Legal Name <span class="required">*</span></label>
+            <input type="text" id="reg-biz-name" class="form-control" placeholder="e.g. Apex BioTech Pvt Ltd" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-email">Official Email Address <span class="required">*</span></label>
+            <input type="email" id="reg-email" class="form-control" placeholder="contact@company.com" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Password (min 6 characters) <span class="required">*</span></label>
+            <input type="password" id="reg-password" class="form-control" placeholder="••••••••" minlength="6" required />
+          </div>
+          <button type="submit" class="btn btn-primary" style="margin-top:0.5rem; justify-content:center;">
+            Create Account & Setup Compliance →
+          </button>
+        </form>
+      </div>
+    `;
+
+    AlgoUI.openModal("Enterprise Access & Account Management", bodyHtml, "");
+
+    document.getElementById("tab-auth-login")?.addEventListener("click", () => {
+      document.getElementById("auth-login-form").style.display = "flex";
+      document.getElementById("auth-register-form").style.display = "none";
+      document.getElementById("tab-auth-login").classList.add("active");
+      document.getElementById("tab-auth-register").classList.remove("active");
+      document.getElementById("tab-auth-login").style.borderBottom = "2px solid var(--brand-700)";
+      document.getElementById("tab-auth-register").style.borderBottom = "2px solid transparent";
+    });
+
+    document.getElementById("tab-auth-register")?.addEventListener("click", () => {
+      document.getElementById("auth-login-form").style.display = "none";
+      document.getElementById("auth-register-form").style.display = "flex";
+      document.getElementById("tab-auth-register").classList.add("active");
+      document.getElementById("tab-auth-login").classList.remove("active");
+      document.getElementById("tab-auth-register").style.borderBottom = "2px solid var(--brand-700)";
+      document.getElementById("tab-auth-login").style.borderBottom = "2px solid transparent";
+    });
+
+    document.getElementById("auth-login-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+      try {
+        AlgoUI.showToast("Authenticating...", "info");
+        const res = await ApiService.login(email, password);
+        AlgoUI.showToast(`Welcome back, ${res.user.businessName}!`, "success");
+        AlgoUI.closeModal();
+        setTimeout(() => location.reload(), 400);
+      } catch (err) {
+        AlgoUI.showToast(err.message, "danger");
+      }
+    });
+
+    document.getElementById("auth-register-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const businessName = document.getElementById("reg-biz-name").value.trim();
+      const email = document.getElementById("reg-email").value.trim();
+      const password = document.getElementById("reg-password").value;
+      try {
+        AlgoUI.showToast("Creating enterprise account...", "info");
+        const res = await ApiService.register(email, password, businessName);
+        AlgoUI.showToast(`Account created for ${res.user.businessName}!`, "success");
+        AlgoUI.closeModal();
+        setTimeout(() => {
+          window.location.href = "profile.html";
+        }, 400);
+      } catch (err) {
+        AlgoUI.showToast(err.message, "danger");
+      }
+    });
   },
 
-  // Setup Global Header & Navigation
-  setupGlobalNavigation() {
-    const profile = AlgoDataStore.getProfile();
-    const notifs = AlgoDataStore.getNotifications();
-    const unreadCount = notifs.filter(n => !n.read).length;
+  renderStatusBadge(status) {
+    const s = (status || "").toUpperCase();
+    if (s === "APPROVED" || s === "ACTIVE" || s === "VERIFIED") {
+      return `<span class="badge badge-success"><span class="badge-dot"></span>${status}</span>`;
+    } else if (s === "SUBMITTED" || s === "UNDER REVIEW" || s === "DUE_SOON") {
+      return `<span class="badge badge-info"><span class="badge-dot"></span>${status}</span>`;
+    } else if (s === "CLARIFICATION REQUIRED" || s === "INSPECTION REQUIRED") {
+      return `<span class="badge badge-warning"><span class="badge-dot"></span>${status}</span>`;
+    } else if (s === "REJECTED" || s === "OVERDUE") {
+      return `<span class="badge badge-danger"><span class="badge-dot"></span>${status}</span>`;
+    } else if (s === "DRAFT" || s === "NOT_APPLIED") {
+      return `<span class="badge badge-neutral"><span class="badge-dot"></span>${status === "NOT_APPLIED" ? "Not Applied" : status}</span>`;
+    }
+    return `<span class="badge badge-neutral">${status}</span>`;
+  },
 
-    // Update profile display names across page
-    document.querySelectorAll(".dyn-industry-name").forEach(el => {
-      el.textContent = profile.businessName || "My Industry";
-    });
+  async setupNavigation() {
+    const authData = await ApiService.getCurrentUser();
+    const user = authData ? authData.user : null;
+    const profile = authData ? authData.profile : null;
 
-    const avatarInitial = (profile.businessName || "A").trim().charAt(0).toUpperCase();
-    document.querySelectorAll(".dyn-avatar-char").forEach(el => {
-      el.textContent = avatarInitial;
-    });
+    const navActions = document.querySelector(".nav-actions");
+    const pillEls = document.querySelectorAll(".profile-pill");
 
-    // Update notification bell count
-    const badgeEl = document.getElementById("nav-notif-badge");
-    if (badgeEl) {
-      if (unreadCount > 0) {
-        badgeEl.textContent = unreadCount;
-        badgeEl.style.display = "flex";
-      } else {
-        badgeEl.style.display = "none";
-      }
+    if (user) {
+      // User is logged in
+      const displayName = (profile && profile.businessName) ? profile.businessName : user.businessName;
+
+      pillEls.forEach(el => {
+        el.textContent = displayName;
+        el.setAttribute("title", `Account: ${displayName} (${user.email})`);
+        const parent = el.parentElement;
+
+        if (parent && !parent.querySelector(".user-dropdown")) {
+          parent.classList.add("user-menu-wrapper");
+          const dropdown = document.createElement("div");
+          dropdown.className = "user-dropdown";
+          dropdown.id = "user-profile-dropdown";
+          dropdown.innerHTML = `
+            <div class="user-dropdown-header">
+              <div class="user-dropdown-name">${displayName}</div>
+              <div class="user-dropdown-meta">${user.email}</div>
+            </div>
+            <div class="user-dropdown-menu">
+              <a href="profile.html" class="user-dropdown-item">
+                <span>🏢</span> Manage Business Profile
+              </a>
+              <a href="dashboard.html" class="user-dropdown-item">
+                <span>📊</span> Compliance Dashboard
+              </a>
+              <a href="approvals.html" class="user-dropdown-item">
+                <span>📋</span> Required Approvals
+              </a>
+              <button type="button" class="user-dropdown-item danger" id="user-sign-out-btn">
+                <span>🚪</span> Sign Out
+              </button>
+            </div>
+          `;
+          parent.appendChild(dropdown);
+
+          el.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdown.classList.toggle("show");
+          });
+
+          document.addEventListener("click", (e) => {
+            if (!parent.contains(e.target)) {
+              dropdown.classList.remove("show");
+            }
+          });
+
+          dropdown.querySelector("#user-sign-out-btn")?.addEventListener("click", async () => {
+            await AlgoUI.handleSignOut();
+          });
+        }
+      });
+    } else {
+      // User is signed out -> Replace pill with Sign In button
+      pillEls.forEach(el => {
+        el.textContent = "Sign In / Register";
+        el.style.backgroundColor = "var(--brand-700)";
+        el.style.color = "#ffffff";
+        el.removeAttribute("href");
+        el.onclick = (e) => {
+          e.preventDefault();
+          AlgoUI.openAuthModal("login");
+        };
+      });
     }
 
-    // Toggle Notifications Dropdown
+    // Notifications setup if logged in
+    const badgeEl = document.getElementById("nav-notif-badge");
     const notifBtn = document.getElementById("nav-notif-btn");
     const notifDropdown = document.getElementById("nav-notif-dropdown");
-    if (notifBtn && notifDropdown) {
+
+    if (user && notifBtn && notifDropdown) {
+      const dashData = await ApiService.getDashboardData();
+      const notifs = dashData.notifications || [];
+      const unreadCount = notifs.filter(n => !n.read).length;
+
+      if (badgeEl) {
+        if (unreadCount > 0) {
+          badgeEl.textContent = unreadCount;
+          badgeEl.style.display = "inline-flex";
+        } else {
+          badgeEl.style.display = "none";
+        }
+      }
+
       notifBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         notifDropdown.classList.toggle("show");
@@ -998,713 +677,1204 @@ const AlgoUI = {
         }
       });
 
-      // Render Notification items in dropdown
-      const notifListEl = document.getElementById("notif-items-list");
+      const notifListEl = document.getElementById("notif-list-container");
       if (notifListEl) {
         if (notifs.length === 0) {
-          notifListEl.innerHTML = `<li class="notif-item"><div class="notif-text">No notifications yet.</div></li>`;
+          notifListEl.innerHTML = `<div class="empty-state-compact">No new notifications.</div>`;
         } else {
           notifListEl.innerHTML = notifs.map(n => `
-            <li class="notif-item ${n.read ? '' : 'unread'}">
-              <div class="notif-icon-box ${n.type}">
-                ${n.type === 'danger' ? '⚠️' : n.type === 'warning' ? '⚡' : n.type === 'success' ? '✓' : 'ℹ️'}
-              </div>
-              <div class="notif-body">
-                <div class="notif-text"><strong>${n.title}</strong> — ${n.message}</div>
-                <div class="notif-time">${n.timeAgo}</div>
-              </div>
-            </li>
+            <div class="notif-item ${n.read ? '' : 'unread'}">
+              <div class="notif-msg">${n.message}</div>
+              <div class="notif-time">${n.time}</div>
+            </div>
           `).join("");
         }
       }
 
-      // Mark all as read button
-      const markAllBtn = document.getElementById("notif-mark-all-btn");
-      if (markAllBtn) {
-        markAllBtn.addEventListener("click", async () => {
-          await ApiService.markAllNotificationsRead();
-          if (badgeEl) badgeEl.style.display = "none";
-          document.querySelectorAll(".notif-item.unread").forEach(el => el.classList.remove("unread"));
-          AlgoUI.showToast("All notifications marked as read.", "info");
-        });
-      }
+      document.getElementById("notif-mark-all-read")?.addEventListener("click", async () => {
+        await ApiService.markAllNotificationsRead();
+        if (badgeEl) badgeEl.style.display = "none";
+        document.querySelectorAll(".notif-item.unread").forEach(el => el.classList.remove("unread"));
+        AlgoUI.showToast("All notifications marked as read.", "info");
+      });
     }
 
-    // Mobile Navigation Toggle
+    // Mobile Hamburger
     const mobileBtn = document.getElementById("mobile-menu-toggle");
-    const navMenu = document.getElementById("main-nav-menu");
+    const navMenu = document.getElementById("main-nav-links");
     if (mobileBtn && navMenu) {
       mobileBtn.addEventListener("click", () => {
         navMenu.classList.toggle("show");
       });
     }
 
-    // Highlight current page in navigation
-    const currentPage = window.location.pathname.split("/").pop() || "index.html";
+    // Active Navigation Highlighting
+    const currentPath = window.location.pathname.split("/").pop() || "index.html";
     document.querySelectorAll(".nav-link").forEach(link => {
       const href = link.getAttribute("href");
-      if (href === currentPage || (currentPage === "" && href === "index.html")) {
+      if (href === currentPath || (currentPath === "" && href === "index.html")) {
         link.classList.add("active");
       } else {
         link.classList.remove("active");
       }
     });
+  },
+
+  async handleSignOut() {
+    if (confirm("Are you sure you want to sign out of your AnumatiSetu account?")) {
+      await ApiService.logout();
+      AlgoUI.showToast("Signed out successfully.", "info");
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 400);
+    }
+  },
+
+  async ensureAuth() {
+    const user = await ApiService.getCurrentUser();
+    if (!user) {
+      AlgoUI.openAuthModal("login");
+      return false;
+    }
+    return true;
   }
 };
 
 // ----------------------------------------------------------------------------
-// 5. Page-Specific Initializers & Handlers
+// 4. Page Controllers
 // ----------------------------------------------------------------------------
 
-// PAGE 2: PROFILE PAGE
+// ==========================================
+// PAGE: PROFILE (profile.html)
+// ==========================================
 async function initProfilePage() {
+  const authData = await ApiService.getCurrentUser();
+  const user = authData ? authData.user : null;
   const profile = await ApiService.getProfile();
-  const form = document.getElementById("industrial-profile-form");
-  const quickFillBtn = document.getElementById("quick-fill-demo-btn");
-  const resetBtn = document.getElementById("reset-profile-btn");
+  const formCard = document.querySelector(".card:has(#business-profile-form)") || document.getElementById("business-profile-form")?.closest(".card");
+  const form = document.getElementById("business-profile-form");
+  const clearBtn = document.getElementById("clear-all-data-btn");
 
-  if (!form) return;
-
-  // Pre-fill form fields
-  if (form.elements["businessName"]) form.elements["businessName"].value = profile.businessName || "";
-  if (form.elements["industryType"]) form.elements["industryType"].value = profile.industryType || "Manufacturing";
-  if (form.elements["businessStage"]) form.elements["businessStage"].value = profile.businessStage || "Existing Business";
-  if (form.elements["location"]) form.elements["location"].value = profile.location || "";
-  if (form.elements["state"]) form.elements["state"].value = profile.state || "Karnataka";
-  if (form.elements["investmentAmount"]) form.elements["investmentAmount"].value = profile.investmentAmount || "";
-  if (form.elements["employeesCount"]) form.elements["employeesCount"].value = profile.employeesCount || "";
-  if (form.elements["businessCategory"]) form.elements["businessCategory"].value = profile.businessCategory || "Medium Enterprise";
-
-  // Form Submission
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const updatedProfile = {
-      businessName: form.elements["businessName"].value.trim(),
-      industryType: form.elements["industryType"].value,
-      businessStage: form.elements["businessStage"].value,
-      location: form.elements["location"].value.trim(),
-      state: form.elements["state"].value,
-      investmentAmount: form.elements["investmentAmount"].value.trim(),
-      employeesCount: form.elements["employeesCount"].value.trim(),
-      businessCategory: form.elements["businessCategory"].value
+  if (clearBtn) {
+    clearBtn.textContent = user ? "Sign Out" : "Sign In / Register";
+    clearBtn.onclick = () => {
+      if (user) AlgoUI.handleSignOut();
+      else AlgoUI.openAuthModal("login");
     };
-
-    if (!updatedProfile.businessName || !updatedProfile.location) {
-      AlgoUI.showToast("Please enter business name and location.", "warning");
-      return;
-    }
-
-    const submitBtn = document.getElementById("generate-reqs-btn");
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = `<span>⏳</span> Generating Intelligent Requirements...`;
-    }
-
-    try {
-      await ApiService.saveProfile(updatedProfile);
-      AlgoUI.showToast("Profile saved! Generated customized approvals and compliance roadmap.", "success");
-      
-      setTimeout(() => {
-        window.location.href = "dashboard.html";
-      }, 900);
-    } catch (err) {
-      AlgoUI.showToast("Failed to save profile.", "danger");
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `<span>⚡</span> Generate Requirements`;
-      }
-    }
-  });
-
-  // Demo Profiles Quick Fill
-  if (quickFillBtn) {
-    quickFillBtn.addEventListener("click", () => {
-      form.elements["businessName"].value = "GreenLeaf Organic Processing Pvt Ltd";
-      form.elements["industryType"].value = "Food Processing";
-      form.elements["businessStage"].value = "Expansion";
-      form.elements["location"].value = "Verna Industrial Estate, South Goa";
-      form.elements["state"].value = "Goa";
-      form.elements["investmentAmount"].value = "₹8.20 Crores";
-      form.elements["employeesCount"].value = "85";
-      form.elements["businessCategory"].value = "Small Enterprise";
-      AlgoUI.showToast("Loaded sample food processing industry profile.", "info");
-    });
   }
 
-  // Reset to Factory Defaults
-  if (resetBtn) {
-    resetBtn.addEventListener("click", () => {
-      if (confirm("Reset all profile, approvals and compliance data to initial demo state?")) {
-        AlgoDataStore.resetToDefault();
-        AlgoUI.showToast("Reset completed.", "info");
-        setTimeout(() => location.reload(), 500);
-      }
-    });
+  const isProfileComplete = profile && profile.isComplete;
+
+  if (isProfileComplete && formCard) {
+    const renderProfileSummary = () => {
+      formCard.innerHTML = `
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3 style="margin-bottom:0.2rem;">Registered Enterprise Profile</h3>
+            <p style="font-size:0.82rem; color:var(--slate-500); margin:0;">Account: <strong>${user.email}</strong></p>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" id="unlock-profile-btn">
+            ✏️ Modify Profile
+          </button>
+        </div>
+        <div style="padding: 1.5rem 0 0.5rem 0;">
+          <div class="profile-overview-grid">
+            <div>
+              <div class="profile-field-label">Legal Entity Name</div>
+              <div class="profile-field-value">${profile.businessName}</div>
+            </div>
+            <div>
+              <div class="profile-field-label">Industry / Activity Sector</div>
+              <div class="profile-field-value">${profile.industryType}</div>
+            </div>
+            <div>
+              <div class="profile-field-label">Operational Stage</div>
+              <div class="profile-field-value">${profile.businessStage}</div>
+            </div>
+            <div>
+              <div class="profile-field-label">Location / Estate</div>
+              <div class="profile-field-value">${profile.location}</div>
+            </div>
+            <div>
+              <div class="profile-field-label">State Jurisdiction</div>
+              <div class="profile-field-value">${profile.state}</div>
+            </div>
+            <div>
+              <div class="profile-field-label">Employees Headcount</div>
+              <div class="profile-field-value">${profile.employeesCount || 0} Employees</div>
+            </div>
+            <div>
+              <div class="profile-field-label">Investment in Plant & Machinery</div>
+              <div class="profile-field-value">${profile.investmentScale || "—"}</div>
+            </div>
+            <div>
+              <div class="profile-field-label">MSME / Enterprise Category</div>
+              <div class="profile-field-value">${profile.businessCategory}</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.75rem; border-top: 1px solid var(--slate-100); padding-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.82rem; color: var(--success-dark); font-weight: 600;">
+              ✓ Statutory requirements mapped and active for ${profile.businessName}
+            </div>
+            <a href="approvals.html" class="btn btn-primary btn-sm">
+              View Applicable Approvals →
+            </a>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("unlock-profile-btn")?.addEventListener("click", () => {
+        if (confirm("Modifying your business profile will recalculate mandatory statutory clearances. Proceed to edit?")) {
+          renderEditForm();
+        }
+      });
+    };
+
+    const renderEditForm = () => {
+      formCard.innerHTML = `
+        <div class="card-header">
+          <h3>Modify Enterprise Registration Details</h3>
+        </div>
+        <form id="business-profile-form" novalidate>
+          <div class="alert alert-warning" style="margin-bottom:1.25rem;">
+            <span>⚠️</span>
+            <div>
+              <strong>Profile Update Notice:</strong> Changes to sector, employee count, or location will automatically update your statutory requirements.
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="businessName" class="form-label">Business / Entity Legal Name <span class="required">*</span></label>
+              <input type="text" id="businessName" name="businessName" class="form-control" value="${profile?.businessName || user?.businessName || ''}" required />
+            </div>
+            <div class="form-group">
+              <label for="industryType" class="form-label">Industry / Activity Sector <span class="required">*</span></label>
+              <select id="industryType" name="industryType" class="form-select" required>
+                <option value="Manufacturing" ${profile.industryType === 'Manufacturing' ? 'selected' : ''}>Manufacturing / Engineering</option>
+                <option value="Food Processing" ${profile.industryType === 'Food Processing' ? 'selected' : ''}>Food Processing & Agro</option>
+                <option value="Textile" ${profile.industryType === 'Textile' ? 'selected' : ''}>Textile & Apparel</option>
+                <option value="Electronics" ${profile.industryType === 'Electronics' ? 'selected' : ''}>Electronics & Hardware</option>
+                <option value="Chemicals" ${profile.industryType === 'Chemicals' ? 'selected' : ''}>Chemicals & Hazardous Materials</option>
+                <option value="Services" ${profile.industryType === 'Services' ? 'selected' : ''}>Commercial Services / Warehousing</option>
+                <option value="Other" ${profile.industryType === 'Other' ? 'selected' : ''}>Other General Business</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="businessStage" class="form-label">Operating Stage <span class="required">*</span></label>
+              <select id="businessStage" name="businessStage" class="form-select" required>
+                <option value="New Setup" ${profile.businessStage === 'New Setup' ? 'selected' : ''}>New Setup (Pre-Operational)</option>
+                <option value="Expansion" ${profile.businessStage === 'Expansion' ? 'selected' : ''}>Expansion / Brownfield Upgrade</option>
+                <option value="Existing Business" ${profile.businessStage === 'Existing Business' ? 'selected' : ''}>Existing Business (Operational)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="location" class="form-label">Operating Location / Industrial Estate <span class="required">*</span></label>
+              <input type="text" id="location" name="location" class="form-control" value="${profile.location || ''}" placeholder="e.g. Peenya Industrial Area, Bengaluru" required />
+            </div>
+            <div class="form-group">
+              <label for="state" class="form-label">State / Union Territory <span class="required">*</span></label>
+              <select id="state" name="state" class="form-select" required>
+                ${["Karnataka", "Maharashtra", "Gujarat", "Tamil Nadu", "Telangana", "Andhra Pradesh", "Uttar Pradesh", "Rajasthan", "Haryana", "Delhi NCR", "Goa", "West Bengal", "Other"]
+                  .map(s => `<option value="${s}" ${profile.state === s ? 'selected' : ''}>${s}</option>`).join("")}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="investmentScale" class="form-label">Investment in Plant & Machinery</label>
+              <input type="text" id="investmentScale" name="investmentScale" class="form-control" value="${profile.investmentScale || ''}" placeholder="e.g. ₹5 Crores" />
+            </div>
+            <div class="form-group">
+              <label for="employeesCount" class="form-label">Number of Employees <span class="required">*</span></label>
+              <input type="number" id="employeesCount" name="employeesCount" class="form-control" value="${profile.employeesCount || 0}" min="0" required />
+            </div>
+            <div class="form-group full-width">
+              <label for="businessCategory" class="form-label">Business Scale / Category <span class="required">*</span></label>
+              <select id="businessCategory" name="businessCategory" class="form-select" required>
+                ${["Micro Enterprise", "Small Enterprise", "Medium Enterprise", "Large Enterprise"]
+                  .map(c => `<option value="${c}" ${profile.businessCategory === c ? 'selected' : ''}>${c}</option>`).join("")}
+              </select>
+            </div>
+          </div>
+          <div style="margin-top: 1.5rem; border-top: 1px solid var(--slate-100); padding-top: 1rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn btn-secondary" id="cancel-edit-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Profile & Determine Requirements →</button>
+          </div>
+        </form>
+      `;
+
+      document.getElementById("cancel-edit-btn")?.addEventListener("click", () => {
+        renderProfileSummary();
+      });
+
+      attachFormSubmitHandler();
+    };
+
+    renderProfileSummary();
+  } else if (form) {
+    // Pre-fill business name from registered user if present
+    if (user && form.elements["businessName"] && !form.elements["businessName"].value) {
+      form.elements["businessName"].value = user.businessName || "";
+    }
+    attachFormSubmitHandler();
+  }
+
+  function attachFormSubmitHandler() {
+    const activeForm = document.getElementById("business-profile-form");
+    if (!activeForm) return;
+    activeForm.onsubmit = window.handleProfileFormSubmit;
   }
 }
 
-// PAGE 3: DASHBOARD PAGE
+window.handleProfileFormSubmit = async function(e) {
+  if (e && e.preventDefault) e.preventDefault();
+
+  const activeForm = document.getElementById("business-profile-form");
+  if (!activeForm) return false;
+
+  const profileData = {
+    businessName: (activeForm.elements["businessName"]?.value || "").trim(),
+    industryType: activeForm.elements["industryType"]?.value || "Manufacturing",
+    businessStage: activeForm.elements["businessStage"]?.value || "New Setup",
+    location: (activeForm.elements["location"]?.value || "").trim(),
+    state: activeForm.elements["state"]?.value || "Karnataka",
+    investmentScale: (activeForm.elements["investmentScale"]?.value || "").trim(),
+    employeesCount: parseInt(activeForm.elements["employeesCount"]?.value) || 0,
+    businessCategory: activeForm.elements["businessCategory"]?.value || "Small Enterprise"
+  };
+
+  if (!profileData.businessName || !profileData.location) {
+    AlgoUI.showToast("Please enter business legal name and location.", "warning");
+    return false;
+  }
+
+  try {
+    AlgoUI.showToast("Saving profile and determining requirements...", "info");
+    await ApiService.saveProfile(profileData);
+    AlgoUI.showToast("Profile saved! Statutory clearances determined.", "success");
+    setTimeout(() => {
+      window.location.href = "approvals.html";
+    }, 500);
+  } catch (err) {
+    AlgoUI.showToast("Error saving profile: " + err.message, "danger");
+  }
+  return false;
+};
+
+// ==========================================
+// PAGE: DASHBOARD (dashboard.html)
+// ==========================================
 async function initDashboardPage() {
+  const user = await ApiService.getCurrentUser();
+  if (!user) {
+    AlgoUI.openAuthModal("login");
+    return;
+  }
+
   const data = await ApiService.getDashboardData();
-  const { profile, metrics, approvalsOverview, upcomingActions, automationAlerts, recentActivities } = data;
+  const { metrics, recentApplications, recentActivities } = data;
 
-  // Header Title
-  const headerEl = document.getElementById("dash-header-title");
-  if (headerEl) {
-    headerEl.textContent = `Good morning, ${profile.businessName || 'Industrial Partner'}`;
+  const titleEl = document.getElementById("dash-header-title");
+  if (titleEl) {
+    if (metrics.hasProfile && metrics.profile) {
+      titleEl.textContent = `Compliance Overview — ${metrics.profile.businessName}`;
+    } else if (user) {
+      titleEl.textContent = `Compliance Overview — ${user.businessName || 'Enterprise'}`;
+    }
   }
 
-  // KPI Numbers
-  const totalEl = document.getElementById("kpi-total-val");
-  const compEl = document.getElementById("kpi-completed-val");
-  const pendEl = document.getElementById("kpi-pending-val");
-  const overEl = document.getElementById("kpi-overdue-val");
-  const overallCompEl = document.getElementById("dash-overall-compliance-val");
-  const gaugeFill = document.getElementById("dash-gauge-fill");
+  const totalReqEl = document.getElementById("kpi-total-approvals");
+  const activeAppsEl = document.getElementById("kpi-active-applications");
+  const pendingActionsEl = document.getElementById("kpi-pending-actions");
+  const upcomingRenewalsEl = document.getElementById("kpi-upcoming-renewals");
 
-  if (totalEl) totalEl.textContent = metrics.total;
-  if (compEl) compEl.textContent = metrics.completed;
-  if (pendEl) pendEl.textContent = metrics.pending;
-  if (overEl) overEl.textContent = metrics.overdue;
-  if (overallCompEl) overallCompEl.textContent = `${metrics.complianceRate}%`;
+  if (totalReqEl) totalReqEl.textContent = metrics.totalRequiredApprovals;
+  if (activeAppsEl) activeAppsEl.textContent = metrics.activeApplicationsCount;
+  if (pendingActionsEl) pendingActionsEl.textContent = metrics.pendingActionsCount;
+  if (upcomingRenewalsEl) upcomingRenewalsEl.textContent = metrics.upcomingRenewalsCount;
 
-  // Animate Circular Gauge (circumference = 283)
-  if (gaugeFill) {
-    const offset = 283 - (283 * metrics.complianceRate) / 100;
-    gaugeFill.style.strokeDashoffset = offset;
-  }
-
-  // Render Approvals Overview Table
-  const approvalsTable = document.getElementById("dash-approvals-table-body");
-  if (approvalsTable) {
-    approvalsTable.innerHTML = approvalsOverview.map(app => `
-      <tr>
-        <td><strong>${app.title}</strong><div style="font-size: 0.78rem; color: var(--slate-500);">${app.department}</div></td>
-        <td><span class="badge badge-neutral">${app.category}</span></td>
-        <td>${AlgoUI.renderStatusBadge(app.status)}</td>
-        <td><button class="btn btn-secondary btn-sm" onclick="showApprovalDetailModal('${app.id}')">View</button></td>
-      </tr>
-    `).join("");
-  }
-
-  // Render Upcoming Actions
-  const upcomingContainer = document.getElementById("dash-upcoming-actions");
-  if (upcomingContainer) {
-    if (upcomingActions.length === 0) {
-      upcomingContainer.innerHTML = `<div style="font-size:0.88rem; color:var(--slate-500);">All scheduled compliance actions are up-to-date!</div>`;
+  const promptBanner = document.getElementById("dash-profile-prompt");
+  if (promptBanner) {
+    if (!metrics.hasProfile) {
+      promptBanner.style.display = "block";
     } else {
-      upcomingContainer.innerHTML = upcomingActions.map(action => `
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--slate-100);">
-          <div>
-            <div style="font-weight: 600; font-size: 0.9rem; color: var(--slate-900);">${action.title}</div>
-            <div style="font-size: 0.78rem; color: var(--slate-500);">${action.act}</div>
+      promptBanner.style.display = "none";
+    }
+  }
+
+  const appsContainer = document.getElementById("dash-recent-applications-list");
+  if (appsContainer) {
+    if (recentApplications.length === 0) {
+      appsContainer.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-title">No applications created yet.</div>
+          <div class="empty-state-desc">Set up your business profile to view applicable statutory approvals and create your first application.</div>
+          <div style="margin-top: 1rem;">
+            <a href="${metrics.hasProfile ? 'approvals.html' : 'profile.html'}" class="btn btn-primary btn-sm">
+              ${metrics.hasProfile ? 'View Required Approvals →' : 'Complete Business Profile →'}
+            </a>
           </div>
-          <span class="badge ${action.daysLeft < 0 ? 'badge-danger' : action.daysLeft <= 3 ? 'badge-warning' : 'badge-info'}">
-            ${action.daysLeft < 0 ? `Overdue by ${Math.abs(action.daysLeft)}d` : `Due in ${action.daysLeft} days`}
-          </span>
+        </div>
+      `;
+    } else {
+      appsContainer.innerHTML = `
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>App ID</th>
+                <th>Approval / License</th>
+                <th>Department</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${recentApplications.map(app => `
+                <tr>
+                  <td><code>${app.id}</code></td>
+                  <td><strong>${app.title}</strong></td>
+                  <td style="font-size:0.82rem; color:var(--slate-600);">${app.department}</td>
+                  <td>${AlgoUI.renderStatusBadge(app.status)}</td>
+                  <td>
+                    <a href="applications.html?id=${app.id}" class="btn btn-secondary btn-sm">Track</a>
+                  </td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+  }
+
+  const actContainer = document.getElementById("dash-activity-list");
+  if (actContainer) {
+    if (recentActivities.length === 0) {
+      actContainer.innerHTML = `<div class="empty-state-compact">No recent compliance activity recorded.</div>`;
+    } else {
+      actContainer.innerHTML = recentActivities.map(act => `
+        <div class="activity-row">
+          <div class="activity-bullet"></div>
+          <div class="activity-body">
+            <div class="activity-text">${act.text}</div>
+            <div class="activity-time">${act.timestamp}</div>
+          </div>
         </div>
       `).join("");
     }
   }
-
-  // Render Automation Alerts
-  const alertsContainer = document.getElementById("dash-automation-alerts");
-  if (alertsContainer) {
-    alertsContainer.innerHTML = automationAlerts.map(alert => `
-      <div class="alert-banner ${alert.type === 'danger' ? 'alert-danger' : 'alert-warning'}" style="margin-bottom: 0.6rem; padding: 0.65rem 0.9rem;">
-        <span style="font-size: 1.1rem;">${alert.type === 'danger' ? '⚠️' : '⚡'}</span>
-        <div>
-          <div style="font-weight: 700; font-size: 0.85rem;">${alert.title}</div>
-          <div style="font-size: 0.8rem;">${alert.message}</div>
-        </div>
-      </div>
-    `).join("");
-  }
-
-  // Render Recent Activities
-  const actContainer = document.getElementById("dash-recent-activities");
-  if (actContainer) {
-    actContainer.innerHTML = recentActivities.map(act => `
-      <div class="activity-item">
-        <div class="activity-icon">${act.icon}</div>
-        <div class="activity-content">
-          <div class="activity-title">${act.title}</div>
-          <div class="activity-time">${act.timestamp} &bull; <span style="color:var(--primary-600);">${act.category}</span></div>
-        </div>
-      </div>
-    `).join("");
-  }
 }
 
-// PAGE 4: APPROVALS PAGE
-let currentApprovalFilter = "All";
-let currentApprovalCategory = "All";
-let currentApprovalSearch = "";
+// ==========================================
+// PAGE: APPROVALS & REQUIREMENTS (approvals.html)
+// ==========================================
+let currentReqCategory = "ALL";
+let currentReqSearch = "";
 
-async function renderApprovalsTable() {
-  const approvals = await ApiService.getApprovals({
-    status: currentApprovalFilter,
-    category: currentApprovalCategory,
-    search: currentApprovalSearch
-  });
-
-  const tbody = document.getElementById("approvals-table-body");
-  const countDisplay = document.getElementById("approvals-count-display");
-
-  if (countDisplay) {
-    countDisplay.textContent = `Showing ${approvals.length} approvals`;
+async function renderRequirementsList() {
+  const authData = await ApiService.getCurrentUser();
+  if (!authData) {
+    AlgoUI.openAuthModal("login");
+    return;
   }
 
-  if (tbody) {
-    if (approvals.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="6" style="text-align:center; padding: 2.5rem; color: var(--slate-500);">
-            <div>🔍 No matching approvals found. Try clearing your search query or filters.</div>
-          </td>
-        </tr>
+  const profile = await ApiService.getProfile();
+  const container = document.getElementById("requirements-table-container");
+  const countEl = document.getElementById("requirements-count");
+
+  if (!profile || !profile.isComplete) {
+    if (container) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-title">Business profile required.</div>
+          <div class="empty-state-desc">Please complete your business location, industry sector, and headcount details to determine your statutory clearances.</div>
+          <div style="margin-top: 1rem;">
+            <a href="profile.html" class="btn btn-primary">Complete Business Profile →</a>
+          </div>
+        </div>
+      `;
+    }
+    if (countEl) countEl.textContent = "0 requirements";
+    return;
+  }
+
+  let requirements = await ApiService.getRequirements();
+
+  if (currentReqCategory !== "ALL") {
+    requirements = requirements.filter(r => r.category.toUpperCase() === currentReqCategory.toUpperCase());
+  }
+  if (currentReqSearch) {
+    const q = currentReqSearch.toLowerCase();
+    requirements = requirements.filter(r =>
+      r.title.toLowerCase().includes(q) ||
+      r.department.toLowerCase().includes(q) ||
+      r.category.toLowerCase().includes(q)
+    );
+  }
+
+  if (countEl) countEl.textContent = `${requirements.length} applicable requirements for ${profile.businessName}`;
+
+  if (container) {
+    if (requirements.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-title">No matching statutory requirements.</div>
+          <div class="empty-state-desc">Try clearing your search query or selecting a different category filter.</div>
+        </div>
       `;
       return;
     }
 
-    tbody.innerHTML = approvals.map(app => `
-      <tr>
-        <td>
-          <div style="font-weight: 700; color: var(--slate-900);">${app.title}</div>
-          <div style="font-size: 0.78rem; color: var(--slate-500);">${app.department}</div>
-        </td>
-        <td><span class="badge badge-neutral">${app.category}</span></td>
-        <td>${AlgoUI.renderStatusBadge(app.status)}</td>
-        <td>
-          <div style="font-weight: 500;">${app.dueDate}</div>
-          <div style="font-size: 0.75rem; color: var(--slate-400);">Fee: ${app.fee}</div>
-        </td>
-        <td>
-          <button class="btn btn-secondary btn-sm" onclick="showApprovalDetailModal('${app.id}')">
-            View Details
-          </button>
-        </td>
-      </tr>
-    `).join("");
+    container.innerHTML = `
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="min-width: 260px;">Approval / Permit</th>
+              <th>Department / Authority</th>
+              <th>Category</th>
+              <th>Inspection</th>
+              <th>Fee Est.</th>
+              <th>Current Status</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${requirements.map(req => `
+              <tr>
+                <td>
+                  <strong>${req.title}</strong>
+                  <div style="font-size: 0.78rem; color: var(--slate-500); margin-top: 0.2rem;">${req.description}</div>
+                </td>
+                <td style="font-size: 0.84rem; color: var(--slate-700);">${req.department}</td>
+                <td><span class="badge badge-neutral">${req.category}</span></td>
+                <td>${req.inspectionRequired ? '<span style="color:var(--warning-dark); font-weight:600;">Yes</span>' : '<span style="color:var(--slate-500);">No</span>'}</td>
+                <td style="font-size: 0.82rem; font-weight:500;">${req.feeEstimate}</td>
+                <td>${AlgoUI.renderStatusBadge(req.status)}</td>
+                <td style="text-align: right;">
+                  <button class="btn btn-primary btn-sm" onclick="handleStartApplication('${req.code}')">
+                    ${req.status === "NOT_APPLIED" ? "Apply Now" : "View Application"}
+                  </button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+}
+
+async function handleStartApplication(reqCode) {
+  const apps = await ApiService.getApplications();
+  const existing = apps.find(a => a.requirementCode === reqCode);
+
+  if (existing) {
+    window.location.href = `applications.html?id=${existing.id}`;
+    return;
+  }
+
+  const catalogItem = STATUTORY_CATALOG.find(r => r.code === reqCode);
+  if (!catalogItem) return;
+
+  const contentHtml = `
+    <div style="display:flex; flex-direction:column; gap:1rem;">
+      <p style="color:var(--slate-700); font-size:0.9rem;">
+        Initiating statutory filing for: <strong>${catalogItem.title}</strong> under <strong>${catalogItem.department}</strong>.
+      </p>
+      <div>
+        <label class="form-label">Mandatory Documents to Prepare:</label>
+        <ul style="font-size:0.85rem; color:var(--slate-600); margin-left:1.25rem; margin-top:0.25rem;">
+          ${catalogItem.mandatoryDocuments.map(d => `<li>${d}</li>`).join("")}
+        </ul>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="app-init-notes">Application Notes / Specifics (Optional):</label>
+        <textarea id="app-init-notes" class="form-textarea" rows="3" placeholder="Enter plant specifications, facility notes, or internal tracking IDs..."></textarea>
+      </div>
+    </div>
+  `;
+
+  const footerHtml = `
+    <button class="btn btn-secondary btn-sm" onclick="AlgoUI.closeModal()">Cancel</button>
+    <button class="btn btn-primary btn-sm" onclick="confirmCreateApplication('${reqCode}')">Create Application Draft →</button>
+  `;
+
+  AlgoUI.openModal(`Initiate Application: ${catalogItem.title}`, contentHtml, footerHtml);
+}
+
+async function confirmCreateApplication(reqCode) {
+  const notes = (document.getElementById("app-init-notes")?.value || "").trim();
+  try {
+    const newApp = await ApiService.createApplication(reqCode, notes);
+    AlgoUI.showToast("Application draft created.", "success");
+    AlgoUI.closeModal();
+    setTimeout(() => {
+      window.location.href = `applications.html?id=${newApp.id}`;
+    }, 400);
+  } catch (e) {
+    AlgoUI.showToast(e.message || "Failed to create application.", "danger");
   }
 }
 
 async function initApprovalsPage() {
-  const metrics = AlgoDataStore.getMetrics();
-
-  // Populate summary counters
-  const totalEl = document.getElementById("app-total-val");
-  const compEl = document.getElementById("app-completed-val");
-  const pendEl = document.getElementById("app-pending-val");
-  const overEl = document.getElementById("app-overdue-val");
-
-  if (totalEl) totalEl.textContent = metrics.total;
-  if (compEl) compEl.textContent = metrics.completed;
-  if (pendEl) pendEl.textContent = metrics.pending;
-  if (overEl) overEl.textContent = metrics.overdue;
-
-  // Filter chips
-  document.querySelectorAll(".approval-status-chip").forEach(chip => {
-    chip.addEventListener("click", () => {
-      document.querySelectorAll(".approval-status-chip").forEach(c => c.classList.remove("active"));
-      chip.classList.add("active");
-      currentApprovalFilter = chip.getAttribute("data-filter") || "All";
-      renderApprovalsTable();
+  const categorySelect = document.getElementById("req-category-filter");
+  if (categorySelect) {
+    categorySelect.addEventListener("change", (e) => {
+      currentReqCategory = e.target.value;
+      renderRequirementsList();
     });
-  });
+  }
 
-  // Search input
-  const searchInput = document.getElementById("approvals-search-input");
+  const searchInput = document.getElementById("req-search-input");
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
-      currentApprovalSearch = e.target.value;
-      renderApprovalsTable();
+      currentReqSearch = e.target.value.trim();
+      renderRequirementsList();
     });
   }
 
-  // Category select
-  const catSelect = document.getElementById("approvals-category-select");
-  if (catSelect) {
-    catSelect.addEventListener("change", (e) => {
-      currentApprovalCategory = e.target.value;
-      renderApprovalsTable();
-    });
+  renderRequirementsList();
+}
+
+// ==========================================
+// PAGE: APPLICATIONS (applications.html)
+// ==========================================
+let currentAppFilter = "ALL";
+
+async function renderApplicationsTable() {
+  const user = await ApiService.getCurrentUser();
+  if (!user) {
+    AlgoUI.openAuthModal("login");
+    return;
   }
 
-  renderApprovalsTable();
-}
+  const apps = await ApiService.getApplications(currentAppFilter);
+  const container = document.getElementById("applications-table-container");
+  const countEl = document.getElementById("applications-count-display");
 
-// Modal for approval item
-async function showApprovalDetailModal(id) {
-  const app = await ApiService.getApprovalById(id);
-  if (!app) return;
+  if (countEl) countEl.textContent = `${apps.length} applications`;
 
-  const contentHtml = `
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <div style="display: flex; align-items: center; justify-content: space-between; background-color: var(--slate-50); padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--slate-200);">
-        <div>
-          <span style="font-size: 0.78rem; color: var(--slate-500); text-transform: uppercase; font-weight: bold;">Current Status</span>
-          <div>${AlgoUI.renderStatusBadge(app.status)}</div>
-        </div>
-        <div style="text-align: right;">
-          <span style="font-size: 0.78rem; color: var(--slate-500); text-transform: uppercase; font-weight: bold;">Due Date</span>
-          <div style="font-weight: 700; color: var(--slate-800);">${app.dueDate}</div>
-        </div>
-      </div>
-
-      <div>
-        <label style="font-weight: 700; font-size: 0.85rem; color: var(--slate-800);">Issuing Authority / Department:</label>
-        <p style="color: var(--slate-600); font-size: 0.9rem;">${app.department}</p>
-      </div>
-
-      <div>
-        <label style="font-weight: 700; font-size: 0.85rem; color: var(--slate-800);">Mandatory Documents Required:</label>
-        <ul style="margin-left: 1.25rem; margin-top: 0.35rem; color: var(--slate-700); font-size: 0.88rem;">
-          ${(app.docsRequired || []).map(doc => `<li style="margin-bottom: 0.25rem;">${doc}</li>`).join("")}
-        </ul>
-      </div>
-
-      <div>
-        <label style="font-weight: 700; font-size: 0.85rem; color: var(--slate-800);">Statutory Fee Estimate:</label>
-        <p style="color: var(--slate-700); font-size: 0.9rem; font-weight: 600;">${app.fee}</p>
-      </div>
-
-      <div class="alert-banner alert-info" style="margin-bottom: 0;">
-        <span>ℹ️</span>
-        <div>
-          <strong>System Remarks:</strong> ${app.remarks || "No active compliance flags."}
-        </div>
-      </div>
-    </div>
-  `;
-
-  const footerHtml = `
-    <div style="display: flex; gap: 0.5rem; width: 100%; justify-content: space-between;">
-      <div>
-        ${app.status !== "Completed" ? `
-          <button class="btn btn-success btn-sm" onclick="updateApprovalItemStatus('${app.id}', 'Completed')">
-            ✓ Mark as Completed
-          </button>
-        ` : `
-          <button class="btn btn-secondary btn-sm" onclick="updateApprovalItemStatus('${app.id}', 'Pending')">
-            Reopen to Pending
-          </button>
-        `}
-      </div>
-      <div style="display: flex; gap: 0.5rem;">
-        <button class="btn btn-primary btn-sm" onclick="AlgoUI.showToast('Document upload simulated.', 'info')">
-          📤 Upload Document
-        </button>
-        <button class="btn btn-secondary btn-sm" onclick="AlgoUI.closeModal()">Close</button>
-      </div>
-    </div>
-  `;
-
-  AlgoUI.openModal(app.title, contentHtml, footerHtml);
-}
-
-async function updateApprovalItemStatus(id, newStatus) {
-  try {
-    await ApiService.updateApprovalStatus(id, newStatus);
-    AlgoUI.showToast(`Updated status to ${newStatus}.`, "success");
-    AlgoUI.closeModal();
-    if (typeof renderApprovalsTable === "function") renderApprovalsTable();
-    if (typeof initDashboardPage === "function" && document.getElementById("dash-header-title")) initDashboardPage();
-  } catch (e) {
-    AlgoUI.showToast("Failed to update status.", "danger");
-  }
-}
-
-// PAGE 5: COMPLIANCE PAGE
-async function initCompliancePage() {
-  const complianceList = await ApiService.getCompliance();
-  const metrics = AlgoDataStore.getMetrics();
-
-  // Progress Bar & Percentage
-  const compValEl = document.getElementById("comp-overall-val");
-  const compBarEl = document.getElementById("comp-progress-fill");
-
-  if (compValEl) compValEl.textContent = `${metrics.complianceRate}%`;
-  if (compBarEl) compBarEl.style.width = `${metrics.complianceRate}%`;
-
-  // Render Categorized Sections
-  const categories = ["Business Compliance", "Environmental Compliance", "Safety Compliance", "Labour Compliance"];
-
-  categories.forEach(cat => {
-    const slug = cat.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    const container = document.getElementById(`comp-list-${slug}`);
-    if (container) {
-      const items = complianceList.filter(c => c.category === cat);
-      if (items.length === 0) {
-        container.innerHTML = `<div style="padding: 1rem; color: var(--slate-500); font-size: 0.88rem;">No items in this category.</div>`;
-      } else {
-        container.innerHTML = items.map(item => `
-          <div class="compliance-item-row">
-            <div class="compliance-item-left">
-              <div class="compliance-status-icon">
-                ${item.status === 'Completed' ? '✅' : item.status === 'Overdue' ? '🔴' : '⚠️'}
-              </div>
-              <div>
-                <div class="compliance-title">${item.title}</div>
-                <div class="compliance-desc">Governing Act: <strong>${item.act}</strong> &bull; ${item.description}</div>
-              </div>
-            </div>
-            <div class="compliance-item-right">
-              <div class="compliance-due">
-                <div>Due: <strong>${item.dueDate}</strong></div>
-                <div style="font-size: 0.75rem; color: ${item.daysLeft < 0 ? 'var(--danger-primary)' : 'var(--slate-500)'};">
-                  ${item.daysLeft < 0 ? `Overdue by ${Math.abs(item.daysLeft)} days` : item.daysLeft === 0 ? 'Completed' : `In ${item.daysLeft} days`}
-                </div>
-              </div>
-              <div>
-                ${AlgoUI.renderStatusBadge(item.status)}
-              </div>
-              <button class="btn btn-secondary btn-sm" onclick="handleComplianceAction('${item.id}')">
-                ${item.actionText || 'View'}
-              </button>
-            </div>
+  if (container) {
+    if (apps.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-title">No applications found.</div>
+          <div class="empty-state-desc">You have no applications under filter "${currentAppFilter}". Initiate an application from your Required Approvals catalog.</div>
+          <div style="margin-top: 1rem;">
+            <a href="approvals.html" class="btn btn-primary">Browse Required Approvals →</a>
           </div>
-        `).join("");
-      }
-    }
-  });
-}
-
-async function handleComplianceAction(id) {
-  const complianceList = await ApiService.getCompliance();
-  const item = complianceList.find(c => c.id === id);
-  if (!item) return;
-
-  const contentHtml = `
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <div style="background-color: var(--slate-50); padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--slate-200);">
-        <div style="font-weight: 700; color: var(--slate-900); font-size: 1rem;">${item.title}</div>
-        <div style="color: var(--slate-500); font-size: 0.82rem;">Statutory Framework: <strong>${item.act}</strong></div>
-      </div>
-
-      <div>
-        <label style="font-weight: 700; font-size: 0.85rem; color: var(--slate-800);">Compliance Description:</label>
-        <p style="color: var(--slate-700); font-size: 0.9rem; margin-top: 0.25rem;">${item.description}</p>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-        <div>
-          <label style="font-weight: 700; font-size: 0.82rem; color: var(--slate-800);">Target Due Date:</label>
-          <div style="font-weight: 600; color: var(--slate-900);">${item.dueDate}</div>
-        </div>
-        <div>
-          <label style="font-weight: 700; font-size: 0.82rem; color: var(--slate-800);">Compliance Risk Level:</label>
-          <div><span class="badge ${item.risk === 'High' ? 'badge-danger' : item.risk === 'Medium' ? 'badge-warning' : 'badge-info'}">${item.risk} Risk</span></div>
-        </div>
-      </div>
-
-      <div class="alert-banner alert-warning" style="margin-bottom: 0;">
-        <span>⚡</span>
-        <div style="font-size: 0.85rem;">
-          <strong>Automated SIH26130 Reminder:</strong> Submitting this compliance item updates your enterprise transparency score.
-        </div>
-      </div>
-    </div>
-  `;
-
-  const footerHtml = `
-    <div style="display: flex; justify-content: space-between; width: 100%;">
-      <div>
-        ${item.status !== "Completed" ? `
-          <button class="btn btn-success btn-sm" onclick="markComplianceItemDone('${item.id}')">
-            ✓ Mark as Complied
-          </button>
-        ` : `
-          <span style="color: var(--success-dark); font-size: 0.85rem; font-weight: 600;">✓ Fully Compliant</span>
-        `}
-      </div>
-      <div style="display: flex; gap: 0.5rem;">
-        <button class="btn btn-primary btn-sm" onclick="AlgoUI.showToast('Simulated filing form opened.', 'info')">
-          Filing Portal &rarr;
-        </button>
-        <button class="btn btn-secondary btn-sm" onclick="AlgoUI.closeModal()">Close</button>
-      </div>
-    </div>
-  `;
-
-  AlgoUI.openModal(`Compliance Details: ${item.title}`, contentHtml, footerHtml);
-}
-
-async function markComplianceItemDone(id) {
-  try {
-    await ApiService.updateComplianceStatus(id, "Completed");
-    AlgoUI.showToast("Compliance verified & marked completed.", "success");
-    AlgoUI.closeModal();
-    initCompliancePage();
-  } catch (e) {
-    AlgoUI.showToast("Error updating compliance.", "danger");
-  }
-}
-
-// PAGE 6: SCHEMES PAGE
-let currentSchemeCategory = "All";
-let currentSchemeSearch = "";
-
-async function renderSchemesGrid() {
-  const schemes = await ApiService.getSchemes({
-    category: currentSchemeCategory,
-    search: currentSchemeSearch
-  });
-
-  const grid = document.getElementById("schemes-cards-grid");
-  const countEl = document.getElementById("schemes-count-display");
-
-  if (countEl) countEl.textContent = `Showing ${schemes.length} potentially relevant schemes`;
-
-  if (grid) {
-    if (schemes.length === 0) {
-      grid.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--slate-200);">
-          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔍</div>
-          <div style="font-weight: 600; color: var(--slate-800);">No government support schemes found for your current filter.</div>
-          <div style="font-size: 0.85rem; color: var(--slate-500); margin-top: 0.25rem;">Try selecting "All" categories or changing your search terms.</div>
         </div>
       `;
       return;
     }
 
-    grid.innerHTML = schemes.map(scheme => `
-      <div class="scheme-card">
-        <div>
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-            <span class="badge badge-info">${scheme.category}</span>
-            <span class="badge badge-success" style="font-size: 0.72rem;">${scheme.eligibilityMatch}</span>
-          </div>
-          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.4rem; line-height: 1.3;">
-            ${scheme.name}
-          </h3>
-          <div style="font-size: 0.78rem; color: var(--slate-500); margin-bottom: 0.75rem;">
-            Nodal Agency: <strong>${scheme.nodalMinistry}</strong>
-          </div>
-          <p style="font-size: 0.88rem; color: var(--slate-600); line-height: 1.5; margin-bottom: 1rem;">
-            ${scheme.description}
-          </p>
-        </div>
-
-        <div>
-          <div class="scheme-benefit-box">
-            💰 <strong>Potential Benefit:</strong> ${scheme.benefit}
-          </div>
-          <button class="btn btn-outline btn-sm btn-block" onclick="showSchemeDetailModal('${scheme.id}')">
-            View Eligibility & Apply &rarr;
-          </button>
-        </div>
+    container.innerHTML = `
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Application ID</th>
+              <th style="min-width: 200px;">Approval / License</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Created Date</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${apps.map(app => `
+              <tr>
+                <td><code>${app.id}</code></td>
+                <td><strong>${app.title}</strong></td>
+                <td style="font-size:0.84rem; color:var(--slate-700);">${app.department}</td>
+                <td>${AlgoUI.renderStatusBadge(app.status)}</td>
+                <td style="font-size:0.84rem; color:var(--slate-600);">${app.createdDate || "—"}</td>
+                <td style="text-align: right;">
+                  <button class="btn btn-secondary btn-sm" onclick="openApplicationDetailsModal('${app.id}')">
+                    Manage Workflow
+                  </button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
       </div>
-    `).join("");
+    `;
   }
 }
 
-async function initSchemesPage() {
-  // Category chips
-  document.querySelectorAll(".scheme-category-chip").forEach(chip => {
-    chip.addEventListener("click", () => {
-      document.querySelectorAll(".scheme-category-chip").forEach(c => c.classList.remove("active"));
-      chip.classList.add("active");
-      currentSchemeCategory = chip.getAttribute("data-category") || "All";
-      renderSchemesGrid();
-    });
-  });
+async function openApplicationDetailsModal(appId) {
+  const app = await ApiService.getApplicationById(appId);
+  if (!app) return;
 
-  // Search
-  const searchInput = document.getElementById("schemes-search-input");
-  if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-      currentSchemeSearch = e.target.value;
-      renderSchemesGrid();
-    });
-  }
-
-  renderSchemesGrid();
-}
-
-async function showSchemeDetailModal(id) {
-  const schemes = await ApiService.getSchemes();
-  const scheme = schemes.find(s => s.id === id);
-  if (!scheme) return;
+  const catalogItem = STATUTORY_CATALOG.find(r => r.code === app.requirementCode);
+  const mandatoryDocs = catalogItem ? catalogItem.mandatoryDocuments : [];
+  const allDocs = await ApiService.getDocuments();
 
   const contentHtml = `
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <div style="background-color: var(--primary-50); padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--primary-200);">
-        <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary-800); text-transform: uppercase;">Estimated Potential Incentive</div>
-        <div style="font-size: 1.1rem; font-weight: 800; color: var(--primary-900); margin-top: 0.2rem;">${scheme.benefit}</div>
-      </div>
-
-      <div>
-        <label style="font-weight: 700; font-size: 0.85rem; color: var(--slate-800);">Nodal Ministry & Department:</label>
-        <p style="color: var(--slate-700); font-size: 0.9rem;">${scheme.nodalMinistry}</p>
-      </div>
-
-      <div>
-        <label style="font-weight: 700; font-size: 0.85rem; color: var(--slate-800);">Scheme Overview:</label>
-        <p style="color: var(--slate-700); font-size: 0.9rem; margin-top: 0.2rem;">${scheme.description}</p>
-      </div>
-
-      <div>
-        <label style="font-weight: 700; font-size: 0.85rem; color: var(--slate-800);">Key Eligibility Criteria:</label>
-        <ul style="margin-left: 1.25rem; margin-top: 0.35rem; font-size: 0.88rem; color: var(--slate-700);">
-          ${(scheme.keyCriteria || []).map(c => `<li style="margin-bottom: 0.25rem;">${c}</li>`).join("")}
-        </ul>
-      </div>
-
-      <div>
-        <label style="font-weight: 700; font-size: 0.85rem; color: var(--slate-800);">Application Channel:</label>
-        <p style="color: var(--slate-700); font-size: 0.88rem; font-weight: 600;">${scheme.applicationMode}</p>
-      </div>
-
-      <div class="alert-banner alert-info" style="margin-bottom: 0; font-size: 0.82rem;">
-        <span>ℹ️</span>
+    <div style="display:flex; flex-direction:column; gap:1.25rem;">
+      
+      <!-- Top Status Banner -->
+      <div style="background-color:var(--slate-50); border:1px solid var(--slate-200); padding:0.85rem 1rem; border-radius:var(--radius-md); display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <strong>SIH Hackathon Prototype Note:</strong> Scheme recommendations are dynamically mapped to your Industrial Profile attributes (Category, State, Turnover).
+          <span style="font-size:0.75rem; color:var(--slate-500); font-weight:700; text-transform:uppercase;">Application Number</span>
+          <div style="font-size:1.05rem; font-weight:800; font-family:var(--font-mono); color:var(--slate-900);">${app.id}</div>
         </div>
+        <div style="text-align:right;">
+          <span style="font-size:0.75rem; color:var(--slate-500); font-weight:700; text-transform:uppercase;">Workflow Status</span>
+          <div>${AlgoUI.renderStatusBadge(app.status)}</div>
+        </div>
+      </div>
+
+      <!-- Application Details -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; font-size:0.88rem;">
+        <div>
+          <label style="font-weight:700; color:var(--slate-800);">Authority / Department:</label>
+          <div style="color:var(--slate-700);">${app.department}</div>
+        </div>
+        <div>
+          <label style="font-weight:700; color:var(--slate-800);">Created Date:</label>
+          <div style="color:var(--slate-700);">${app.createdDate || "—"}</div>
+        </div>
+      </div>
+
+      <!-- Clarification Alert if active -->
+      ${app.status === "CLARIFICATION REQUIRED" ? `
+        <div class="alert alert-warning">
+          <span>⚠️</span>
+          <div>
+            <strong>Department Clarification Notice:</strong>
+            <div>${app.clarificationMessage || "Please submit requested clarifications to the department."}</div>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Inspection Alert if active -->
+      ${app.status === "INSPECTION REQUIRED" ? `
+        <div class="alert alert-warning">
+          <span>📅</span>
+          <div>
+            <strong>Physical Site Inspection Scheduled:</strong>
+            <div>Scheduled Inspection Date: <strong>${app.inspectionDate || "To be confirmed by Department Inspector"}</strong></div>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Mandatory Documents Checklist with REAL file upload -->
+      <div>
+        <label style="font-weight:700; font-size:0.88rem; color:var(--slate-800); display:block; margin-bottom:0.4rem;">
+          Mandatory Statutory Documents (Upload & Verify):
+        </label>
+        <div style="border:1px solid var(--slate-200); border-radius:var(--radius-md); overflow:hidden;">
+          ${mandatoryDocs.map((docName, idx) => {
+            const isAttached = (app.documentsAttached || []).includes(docName);
+            const matchingDoc = allDocs.find(d => d.applicationId === app.id && d.name === docName);
+            const hasRealFile = matchingDoc && matchingDoc.hasFile && matchingDoc.fileName;
+
+            return `
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:0.65rem 0.85rem; border-bottom:1px solid var(--slate-100); font-size:0.84rem;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <span>${isAttached ? '✅' : '⚪'}</span>
+                  <div>
+                    <span style="${isAttached ? 'color:var(--slate-900); font-weight:600;' : 'color:var(--slate-500);'}">${docName}</span>
+                    ${matchingDoc && matchingDoc.fileName ? `<div style="font-size:0.75rem; color:var(--slate-500); font-family:var(--font-mono);">${matchingDoc.fileName} (${matchingDoc.fileSize})</div>` : ''}
+                  </div>
+                </div>
+                <div style="display:flex; gap:0.4rem; align-items:center;">
+                  ${hasRealFile ? `
+                    <a href="${UPLOADS_BASE}/${encodeURIComponent(matchingDoc.fileName)}" target="_blank" class="btn btn-secondary btn-sm" style="padding:0.25rem 0.55rem; font-size:0.78rem;">
+                      📄 View File
+                    </a>
+                  ` : ''}
+                  <input type="file" id="app-doc-file-${idx}" style="display:none;" onchange="handleAppDocUpload(event, '${app.id}', '${docName.replace(/'/g, "\\'")}')" />
+                  <button class="btn ${isAttached ? 'btn-secondary' : 'btn-primary'} btn-sm" style="padding:0.25rem 0.6rem; font-size:0.78rem;" onclick="document.getElementById('app-doc-file-${idx}').click()">
+                    ${isAttached ? 'Replace File' : '+ Upload File'}
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </div>
+
+      <!-- Owner Self-Reported Regulatory Status Tracking -->
+      <div style="border-top:1px solid var(--slate-200); padding-top:1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+          <label style="font-weight:700; font-size:0.84rem; color:var(--slate-700);">
+            Self-Reported Application Tracking Status:
+          </label>
+          <span style="font-size:0.74rem; color:var(--slate-500);">Record status updates from department</span>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+          ${app.status === "DRAFT" ? `
+            <button class="btn btn-primary btn-sm" onclick="advanceAppStatus('${app.id}', 'SUBMITTED')">
+              📤 Mark as Submitted (I have filed this)
+            </button>
+          ` : ''}
+
+          ${app.status === "SUBMITTED" ? `
+            <button class="btn btn-secondary btn-sm" onclick="advanceAppStatus('${app.id}', 'UNDER REVIEW')">
+              🔍 Mark as Under Review (Department acknowledged)
+            </button>
+          ` : ''}
+
+          ${app.status === "UNDER REVIEW" ? `
+            <button class="btn btn-secondary btn-sm" onclick="triggerClarificationDialog('${app.id}')">
+              ⚠️ Record Clarification Notice
+            </button>
+            ${app.inspectionRequired ? `
+              <button class="btn btn-secondary btn-sm" onclick="triggerInspectionDialog('${app.id}')">
+                📅 Record Scheduled Inspection
+              </button>
+            ` : ''}
+            <button class="btn btn-success btn-sm" onclick="advanceAppStatus('${app.id}', 'APPROVED')">
+              ✓ Record Approval (Permit Issued)
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="advanceAppStatus('${app.id}', 'REJECTED')">
+              ✕ Record Rejection
+            </button>
+          ` : ''}
+
+          ${app.status === "CLARIFICATION REQUIRED" ? `
+            <button class="btn btn-primary btn-sm" onclick="advanceAppStatus('${app.id}', 'UNDER REVIEW')">
+              📤 Mark Clarification Submitted
+            </button>
+          ` : ''}
+
+          ${app.status === "INSPECTION REQUIRED" ? `
+            <button class="btn btn-success btn-sm" onclick="advanceAppStatus('${app.id}', 'APPROVED')">
+              ✓ Inspection Passed & Approved
+            </button>
+          ` : ''}
+
+          ${app.status === "APPROVED" ? `
+            <a href="renewals.html" class="btn btn-secondary btn-sm">
+              📜 View Active License & Renewal Timeline →
+            </a>
+          ` : ''}
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  const footerHtml = `
+    <button class="btn btn-secondary btn-sm" onclick="AlgoUI.closeModal()">Close</button>
+  `;
+
+  AlgoUI.openModal(`Application Details: ${app.title}`, contentHtml, footerHtml);
+}
+
+async function handleAppDocUpload(event, appId, docName) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("docName", docName);
+  formData.append("category", "Statutory Filing");
+  formData.append("applicationId", appId);
+  formData.append("file", file);
+
+  try {
+    AlgoUI.showToast(`Uploading ${file.name}...`, "info");
+    await ApiService.uploadDocument(formData);
+    AlgoUI.showToast(`Uploaded: ${docName}`, "success");
+    openApplicationDetailsModal(appId);
+    renderApplicationsTable();
+  } catch (err) {
+    AlgoUI.showToast("Failed to upload document: " + err.message, "danger");
+  }
+}
+
+async function advanceAppStatus(appId, newStatus) {
+  try {
+    await ApiService.updateApplicationStatus(appId, newStatus);
+    AlgoUI.showToast(`Application status updated to ${newStatus}.`, "success");
+    AlgoUI.closeModal();
+    renderApplicationsTable();
+  } catch (e) {
+    AlgoUI.showToast(e.message || "Failed to update status.", "danger");
+  }
+}
+
+function triggerClarificationDialog(appId) {
+  const contentHtml = `
+    <div style="display:flex; flex-direction:column; gap:1rem;">
+      <p style="font-size:0.88rem; color:var(--slate-700);">
+        Enter the clarification note or document request issued by the regulatory department:
+      </p>
+      <div class="form-group">
+        <label class="form-label" for="modal-clarification-msg">Department Clarification Details <span class="required">*</span></label>
+        <textarea id="modal-clarification-msg" class="form-textarea" rows="4" placeholder="e.g. Submit revised architectural fire exit layout and certified test report."></textarea>
       </div>
     </div>
   `;
 
   const footerHtml = `
-    <div style="display: flex; justify-content: space-between; width: 100%;">
-      <button class="btn btn-secondary btn-sm" onclick="AlgoUI.showToast('Bookmarked to Tracked Schemes.', 'success')">
-        ⭐ Bookmark Scheme
-      </button>
-      <div style="display: flex; gap: 0.5rem;">
-        <button class="btn btn-primary btn-sm" onclick="AlgoUI.showToast('Redirecting to official NSWS portal...', 'info')">
-          Apply on Portal &rarr;
-        </button>
-        <button class="btn btn-secondary btn-sm" onclick="AlgoUI.closeModal()">Close</button>
+    <button class="btn btn-secondary btn-sm" onclick="openApplicationDetailsModal('${appId}')">Cancel</button>
+    <button class="btn btn-primary btn-sm" onclick="confirmClarificationRequest('${appId}')">Save Clarification Notice →</button>
+  `;
+
+  AlgoUI.openModal("Record Department Clarification", contentHtml, footerHtml);
+}
+
+async function confirmClarificationRequest(appId) {
+  const msg = (document.getElementById("modal-clarification-msg")?.value || "").trim();
+  if (!msg) {
+    AlgoUI.showToast("Please enter the clarification message.", "warning");
+    return;
+  }
+
+  try {
+    await ApiService.updateApplicationStatus(appId, "CLARIFICATION REQUIRED", { clarificationMessage: msg });
+    AlgoUI.showToast("Clarification recorded.", "warning");
+    openApplicationDetailsModal(appId);
+  } catch (e) {
+    AlgoUI.showToast("Failed to record clarification: " + e.message, "danger");
+  }
+}
+
+function triggerInspectionDialog(appId) {
+  const defaultDate = new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0];
+  const contentHtml = `
+    <div style="display:flex; flex-direction:column; gap:1rem;">
+      <p style="font-size:0.88rem; color:var(--slate-700);">
+        Enter the date scheduled for physical on-site premises inspection by the department:
+      </p>
+      <div class="form-group">
+        <label class="form-label" for="modal-inspection-date">Scheduled Inspection Date <span class="required">*</span></label>
+        <input type="date" id="modal-inspection-date" class="form-control" value="${defaultDate}" required />
       </div>
     </div>
   `;
 
-  AlgoUI.openModal(scheme.name, contentHtml, footerHtml);
+  const footerHtml = `
+    <button class="btn btn-secondary btn-sm" onclick="openApplicationDetailsModal('${appId}')">Cancel</button>
+    <button class="btn btn-primary btn-sm" onclick="confirmInspectionSchedule('${appId}')">Record Scheduled Inspection →</button>
+  `;
+
+  AlgoUI.openModal("Record Scheduled Inspection", contentHtml, footerHtml);
+}
+
+async function confirmInspectionSchedule(appId) {
+  const dateStr = (document.getElementById("modal-inspection-date")?.value || "").trim();
+  if (!dateStr) {
+    AlgoUI.showToast("Please select a valid date.", "warning");
+    return;
+  }
+
+  try {
+    await ApiService.updateApplicationStatus(appId, "INSPECTION REQUIRED", { inspectionDate: dateStr });
+    AlgoUI.showToast("Physical inspection scheduled.", "warning");
+    openApplicationDetailsModal(appId);
+  } catch (e) {
+    AlgoUI.showToast("Failed to schedule inspection: " + e.message, "danger");
+  }
+}
+
+async function initApplicationsPage() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetId = urlParams.get("id");
+
+  document.querySelectorAll(".app-filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".app-filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentAppFilter = btn.getAttribute("data-status") || "ALL";
+      renderApplicationsTable();
+    });
+  });
+
+  await renderApplicationsTable();
+
+  if (targetId) {
+    openApplicationDetailsModal(targetId);
+  }
+}
+
+// ==========================================
+// PAGE: DOCUMENTS (documents.html)
+// ==========================================
+async function renderDocumentsGrid() {
+  const user = await ApiService.getCurrentUser();
+  if (!user) {
+    AlgoUI.openAuthModal("login");
+    return;
+  }
+
+  const docs = await ApiService.getDocuments();
+  const container = document.getElementById("documents-list-container");
+  const countEl = document.getElementById("documents-count-display");
+
+  if (countEl) countEl.textContent = `${docs.length} statutory documents`;
+
+  if (container) {
+    if (docs.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-title">No documents uploaded.</div>
+          <div class="empty-state-desc">Upload business licenses, drawings, or inspection reports to attach them to your statutory applications.</div>
+          <div style="margin-top: 1rem;">
+            <button class="btn btn-primary" onclick="openUploadDocumentModal()">+ Upload First Document</button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Document Name</th>
+              <th>Category</th>
+              <th>File Name</th>
+              <th>Size</th>
+              <th>Upload Date</th>
+              <th>Status</th>
+              <th style="text-align: right; min-width: 180px;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${docs.map(doc => `
+              <tr>
+                <td><strong>${doc.name}</strong></td>
+                <td><span class="badge badge-neutral">${doc.category}</span></td>
+                <td><code>${doc.fileName}</code></td>
+                <td style="font-size:0.82rem; color:var(--slate-600);">${doc.fileSize || "—"}</td>
+                <td style="font-size:0.82rem; color:var(--slate-600);">${doc.uploadedDate}</td>
+                <td>${AlgoUI.renderStatusBadge(doc.status)}</td>
+                <td style="text-align: right;">
+                  <div style="display:inline-flex; gap:0.4rem; justify-content:flex-end;">
+                    ${doc.hasFile && doc.fileName ? `
+                      <a href="${UPLOADS_BASE}/${encodeURIComponent(doc.fileName)}" target="_blank" class="btn btn-secondary btn-sm" title="View Document">
+                        View
+                      </a>
+                      <a href="${UPLOADS_BASE}/${encodeURIComponent(doc.fileName)}" download="${doc.fileName}" class="btn btn-secondary btn-sm" title="Download Document">
+                        ⬇️
+                      </a>
+                    ` : ''}
+                    <button class="btn btn-danger btn-sm" onclick="handleDeleteDoc('${doc.id}')">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+}
+
+function openUploadDocumentModal() {
+  const contentHtml = `
+    <form id="doc-upload-form" onsubmit="handleDocUploadSubmit(event)">
+      <div class="form-group">
+        <label class="form-label" for="upload-doc-name">Document Title / Name <span class="required">*</span></label>
+        <input type="text" id="upload-doc-name" class="form-control" placeholder="e.g. Factory Layout Plan Drawing" required />
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="upload-doc-cat">Category <span class="required">*</span></label>
+        <select id="upload-doc-cat" class="form-select" required>
+          <option value="Infrastructure Blueprints">Infrastructure Blueprints</option>
+          <option value="Environmental Test Reports">Environmental Test Reports</option>
+          <option value="Safety Audits">Safety Audits</option>
+          <option value="Corporate / Legal">Corporate / Legal Identification</option>
+          <option value="Labour Registers">Labour & Wage Registers</option>
+          <option value="Statutory Filing">Statutory Filing</option>
+          <option value="General">General Compliance</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-top:1rem;">
+        <label class="form-label" for="upload-doc-file">Select File (PDF / JPG / PNG / DOCX)</label>
+        <input type="file" id="upload-doc-file" class="form-control" />
+      </div>
+      <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:0.5rem;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="AlgoUI.closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Upload Document →</button>
+      </div>
+    </form>
+  `;
+
+  AlgoUI.openModal("Upload Statutory Document", contentHtml, "");
+}
+
+async function handleDocUploadSubmit(e) {
+  e.preventDefault();
+  const name = document.getElementById("upload-doc-name").value.trim();
+  const cat = document.getElementById("upload-doc-cat").value;
+  const fileInput = document.getElementById("upload-doc-file");
+
+  if (!name) return;
+
+  const formData = new FormData();
+  formData.append("docName", name);
+  formData.append("category", cat);
+  if (fileInput.files.length > 0) {
+    formData.append("file", fileInput.files[0]);
+  }
+
+  try {
+    AlgoUI.showToast("Uploading document to server...", "info");
+    await ApiService.uploadDocument(formData);
+    AlgoUI.showToast("Document uploaded successfully.", "success");
+    AlgoUI.closeModal();
+    renderDocumentsGrid();
+  } catch (err) {
+    AlgoUI.showToast("Upload failed: " + err.message, "danger");
+  }
+}
+
+async function handleDeleteDoc(docId) {
+  if (confirm("Are you sure you want to delete this document from MySQL database and server disk?")) {
+    try {
+      await ApiService.deleteDocument(docId);
+      AlgoUI.showToast("Document deleted.", "info");
+      renderDocumentsGrid();
+    } catch (err) {
+      AlgoUI.showToast("Failed to delete document: " + err.message, "danger");
+    }
+  }
+}
+
+async function initDocumentsPage() {
+  const uploadBtn = document.getElementById("open-upload-doc-btn");
+  if (uploadBtn) {
+    uploadBtn.addEventListener("click", openUploadDocumentModal);
+  }
+  renderDocumentsGrid();
+}
+
+// ==========================================
+// PAGE: RENEWALS (renewals.html)
+// ==========================================
+async function renderRenewalsTable() {
+  const user = await ApiService.getCurrentUser();
+  if (!user) {
+    AlgoUI.openAuthModal("login");
+    return;
+  }
+
+  const renewals = await ApiService.getRenewals();
+  const container = document.getElementById("renewals-table-container");
+  const countEl = document.getElementById("renewals-count-display");
+
+  if (countEl) countEl.textContent = `${renewals.length} active licenses`;
+
+  if (container) {
+    if (renewals.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-title">No active licences or upcoming renewals.</div>
+          <div class="empty-state-desc">When your statutory applications are approved, active licenses will automatically be tracked here for renewal management.</div>
+          <div style="margin-top: 1rem;">
+            <a href="applications.html" class="btn btn-primary">View Applications →</a>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    const now = new Date();
+
+    container.innerHTML = `
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>License / Approval</th>
+              <th>Department</th>
+              <th>License Number</th>
+              <th>Issue Date</th>
+              <th>Expiry Date</th>
+              <th>Days Remaining</th>
+              <th>Status</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${renewals.map(r => {
+              const exp = new Date(r.expiryDate);
+              const diffDays = Math.ceil((exp - now) / (1000 * 60 * 60 * 24));
+              const isDueSoon = diffDays <= 60 && diffDays > 0;
+              const isOverdue = diffDays <= 0;
+
+              return `
+                <tr>
+                  <td><strong>${r.title}</strong></td>
+                  <td style="font-size:0.84rem; color:var(--slate-700);">${r.department}</td>
+                  <td><code>${r.licenseNumber}</code></td>
+                  <td style="font-size:0.84rem; color:var(--slate-600);">${r.issueDate || "—"}</td>
+                  <td style="font-size:0.84rem; color:var(--slate-800); font-weight:600;">${r.expiryDate}</td>
+                  <td>
+                    ${isOverdue ? `
+                      <span style="color:var(--danger-primary); font-weight:700;">Overdue by ${Math.abs(diffDays)}d</span>
+                    ` : isDueSoon ? `
+                      <span style="color:var(--warning-dark); font-weight:700;">${diffDays} days</span>
+                    ` : `
+                      <span style="color:var(--slate-700);">${diffDays} days</span>
+                    `}
+                  </td>
+                  <td>
+                    ${isOverdue ? AlgoUI.renderStatusBadge("OVERDUE") : isDueSoon ? AlgoUI.renderStatusBadge("DUE_SOON") : AlgoUI.renderStatusBadge("ACTIVE")}
+                  </td>
+                  <td style="text-align: right;">
+                    <button class="btn btn-secondary btn-sm" onclick="handleRenewLicenseAction('${r.id}')">
+                      Renew License
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+}
+
+async function handleRenewLicenseAction(renewalId) {
+  const renewals = await ApiService.getRenewals();
+  const target = renewals.find(r => r.id === renewalId);
+  if (!target) return;
+
+  if (confirm(`Submit renewal application for ${target.title} (${target.licenseNumber}) for another ${target.validityYears} year(s)?`)) {
+    try {
+      await ApiService.renewLicense(renewalId);
+      AlgoUI.showToast("License successfully renewed in MySQL database!", "success");
+      renderRenewalsTable();
+    } catch (err) {
+      AlgoUI.showToast("Renewal failed: " + err.message, "danger");
+    }
+  }
+}
+
+async function initRenewalsPage() {
+  renderRenewalsTable();
 }
 
 // ----------------------------------------------------------------------------
-// 6. Global DOMContentLoaded Bootstrap Router
+// 5. DOM Initializer & Routing
 // ----------------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-  // Initialize storage
-  AlgoDataStore.init();
+  AlgoUI.setupNavigation();
 
-  // Setup Global Nav
-  AlgoUI.setupGlobalNavigation();
-
-  // Route page-specific logic
   const path = window.location.pathname.toLowerCase();
 
-  if (path.endsWith("profile.html")) {
+  if (path.includes("profile") || document.getElementById("business-profile-form")) {
     initProfilePage();
-  } else if (path.endsWith("dashboard.html")) {
+  } else if (path.includes("dashboard") || document.getElementById("dash-header-title")) {
     initDashboardPage();
-  } else if (path.endsWith("approvals.html")) {
+  } else if (path.includes("approvals") || document.getElementById("requirements-table-container")) {
     initApprovalsPage();
-  } else if (path.endsWith("compliance.html")) {
-    initCompliancePage();
-  } else if (path.endsWith("schemes.html")) {
-    initSchemesPage();
+  } else if (path.includes("applications") || document.getElementById("applications-table-container")) {
+    initApplicationsPage();
+  } else if (path.includes("documents") || document.getElementById("documents-list-container")) {
+    initDocumentsPage();
+  } else if (path.includes("renewals") || document.getElementById("renewals-table-container")) {
+    initRenewalsPage();
   }
 });
