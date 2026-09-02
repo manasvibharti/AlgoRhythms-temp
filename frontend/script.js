@@ -13,42 +13,209 @@ const TOKEN_KEY = "anumatisetu_auth_token";
 // 1. Regulatory Requirement Definition Rules (Client Display Catalog)
 // ----------------------------------------------------------------------------
 const STATUTORY_CATALOG = [
+  // 1. General Statutory Clearances
   {
     code: "REQ_TRADE_LICENSE",
     title: "Municipal Trade License",
     department: "Municipal Corporation / Local Urban Body",
     category: "General Business",
     description: "Mandatory operating permit issued by local municipal authorities verifying commercial zoning compliance.",
-    mandatoryDocuments: ["Property Tax Receipt or Lease Deed", "Identity & Address Proof of Proprietor/Directors", "Sanctioned Building Layout"],
+    mandatoryDocuments: ["Property Tax Receipt or Registered Lease Deed", "Identity & Address Proof of Proprietor/Directors", "Sanctioned Building Layout Plan"],
     inspectionRequired: false,
     validityYears: 1,
     feeEstimate: "₹5,000 – ₹10,000"
   },
   {
     code: "REQ_FIRE_NOC",
-    title: "Fire Safety Certificate (NOC)",
+    title: "Fire Safety Certificate (Fire NOC)",
     department: "State Fire and Emergency Services Department",
     category: "Safety & Hazard",
     description: "Statutory clearance certifying premises compliance with the National Building Code (NBC) fire protection measures.",
-    mandatoryDocuments: ["Architectural Fire Evacuation Plan", "Hydrant & Sprinkler Test Certificates", "Fire Extinguisher Installation Audit"],
+    mandatoryDocuments: ["Architectural Fire Evacuation Plan", "Hydrant & Sprinkler Flow Test Certificates", "Fire Extinguisher Installation Audit"],
     inspectionRequired: true,
     validityYears: 3,
     feeEstimate: "₹10,000 – ₹25,000"
   },
   {
     code: "REQ_BUILDING_SANCTION",
-    title: "Industrial Building Plan Sanction & Occupancy",
+    title: "Industrial / Commercial Building Plan Sanction",
     department: "Industrial Area Development Board / Town Planning Authority",
     category: "Infrastructure",
-    description: "Formal sanction of industrial civil structures ensuring structural stability and zoning clearances.",
-    mandatoryDocuments: ["Structural Stability Certificate by Chartered Engineer", "Site Elevation & Cross-Section Blueprints", "Land Allotment Order"],
+    description: "Formal sanction of civil building structures ensuring structural stability and zoning clearances.",
+    mandatoryDocuments: ["Structural Stability Certificate by Chartered Engineer", "Site Elevation & Cross-Section Blueprints", "Land Allotment Order / Title Deed"],
     inspectionRequired: true,
     validityYears: 5,
     feeEstimate: "₹25,000 – ₹75,000"
   },
+
+  // 2. Food Processing & Agro
+  {
+    code: "REQ_FSSAI_LICENSE",
+    title: "FSSAI Food Business Manufacturing License",
+    department: "Food Safety and Standards Authority of India (FSSAI)",
+    category: "Food Safety",
+    description: "Mandatory statutory food business operating license under the Food Safety and Standards Act, 2006.",
+    mandatoryDocuments: ["Food Safety Management System (FSMS) Plan", "Water Potability Lab Test Report (IS:10500)", "Equipment Layout & Capacity Breakdown", "Recall Management Protocol"],
+    inspectionRequired: true,
+    validityYears: 3,
+    feeEstimate: "₹7,500 – ₹15,000"
+  },
+  {
+    code: "REQ_AGMARK_GRADING",
+    title: "AGMARK Quality Grading & Certification",
+    department: "Directorate of Marketing & Inspection (Ministry of Agriculture)",
+    category: "Food Safety",
+    description: "Statutory agricultural produce grading certification under Agricultural Produce (Grading and Marking) Act.",
+    mandatoryDocuments: ["Chemist Approval Certificate", "Packaging Material Food-Grade Test Report", "Standard Operating Procedure (SOP) for Batch Testing"],
+    inspectionRequired: true,
+    validityYears: 5,
+    feeEstimate: "₹10,000 – ₹20,000"
+  },
+  {
+    code: "REQ_COLD_STORAGE_NOC",
+    title: "Cold Chain Storage & Temperature Telemetry NOC",
+    department: "State Agriculture & Horticulture Department",
+    category: "Food Safety",
+    description: "Statutory temperature compliance certification for perishable food ingredient cold storage facilities.",
+    mandatoryDocuments: ["Refrigeration Plant Engineering Schematics", "Continuous Temperature Data Logging Report", "Backup Power Generator Certificate"],
+    inspectionRequired: true,
+    validityYears: 2,
+    feeEstimate: "₹12,000 – ₹25,000"
+  },
+
+  // 3. Chemicals & Hazardous Materials
+  {
+    code: "REQ_PESO_LICENSE",
+    title: "PESO Petroleum & Hazardous Chemical Storage License",
+    department: "Petroleum & Explosives Safety Organisation (PESO)",
+    category: "Safety & Hazard",
+    description: "Statutory approval under Petroleum Rules 2002 & Static and Mobile Pressure Vessels (SMPV) Rules.",
+    mandatoryDocuments: ["Storage Tank Fabrication & Hydro-test Drawings", "Flameproof Electrical Equipment Test Certificates", "On-site Emergency Disaster Management Plan (DMP)"],
+    inspectionRequired: true,
+    validityYears: 3,
+    feeEstimate: "₹25,000 – ₹50,000"
+  },
+  {
+    code: "REQ_HAZMAT_AUTHORIZATION",
+    title: "SPCB Hazardous & Other Waste Management Authorization",
+    department: "State Pollution Control Board (SPCB)",
+    category: "Environment",
+    description: "Mandatory authorization under Hazardous and Other Wastes (Management & Transboundary Movement) Rules, 2016.",
+    mandatoryDocuments: ["Common TSDF Membership Agreement", "Hazardous Waste Storage Shed Blueprint", "Manifest Record Keeping Protocol (Form 10)"],
+    inspectionRequired: true,
+    validityYears: 5,
+    feeEstimate: "₹15,000 – ₹35,000"
+  },
+  {
+    code: "REQ_PROCESS_SAFETY_41",
+    title: "Factories Act Section 41 Hazardous Process Safety Clearance",
+    department: "Directorate of Industrial Safety & Health (DISH)",
+    category: "Safety & Hazard",
+    description: "Statutory appraisal by the State Site Appraisal Committee for establishments involving hazardous chemical processes.",
+    mandatoryDocuments: ["Quantitative Risk Assessment (QRA) Report", "HAZOP Process Safety Study", "Occupational Health Surveillance Protocol"],
+    inspectionRequired: true,
+    validityYears: 5,
+    feeEstimate: "₹20,000 – ₹45,000"
+  },
+
+  // 4. Textile & Apparel
+  {
+    code: "REQ_ZLD_COMPLIANCE",
+    title: "SPCB Zero Liquid Discharge (ZLD) Effluent System Certificate",
+    department: "State Pollution Control Board (SPCB)",
+    category: "Environment",
+    description: "Mandatory ZLD certification certifying zero untreated liquid effluent discharge from textile wet processing units.",
+    mandatoryDocuments: ["Multi-Effect Evaporator (MEE) & RO Flowsheet", "Continuous Online Effluent Monitoring (OCEMS) Telemetry", "Salt Recovery & Hazardous Sludge Manifest"],
+    inspectionRequired: true,
+    validityYears: 2,
+    feeEstimate: "₹30,000 – ₹70,000"
+  },
+  {
+    code: "REQ_TEXTILE_COMMISSIONER",
+    title: "Textile Commissioner Industrial Registration",
+    department: "Office of the Textile Commissioner (Ministry of Textiles)",
+    category: "General Business",
+    description: "Statutory industrial registration for powerlooms, spinning mills, and textile processing units.",
+    mandatoryDocuments: ["Installed Spindle/Loom Machinery Specification", "Udyam MSME Registration Certificate", "Factory Building Plan Sanction"],
+    inspectionRequired: false,
+    validityYears: 10,
+    feeEstimate: "Nil (Statutory Free Filing)"
+  },
+
+  // 5. Electronics & Hardware
+  {
+    code: "REQ_EPR_EWASTE",
+    title: "CPCB Extended Producer Responsibility (EPR) E-Waste Authorization",
+    department: "Central Pollution Control Board (CPCB)",
+    category: "Environment",
+    description: "Mandatory EPR authorization under E-Waste (Management) Rules, 2022 for producers of electronic hardware.",
+    mandatoryDocuments: ["EPR Target Plan & Collection Center Agreements", "Authorized PRO / Recycler Agreement", "RoHS Compliance Declaration Form"],
+    inspectionRequired: false,
+    validityYears: 5,
+    feeEstimate: "₹10,000 – ₹25,000"
+  },
+  {
+    code: "REQ_BIS_CRS",
+    title: "BIS Compulsory Registration Scheme (CRS) Electronics Safety",
+    department: "Bureau of Indian Standards (BIS)",
+    category: "Safety & Hazard",
+    description: "Statutory product conformity certification for IT and electronic equipment under Electronics & IT Goods Order.",
+    mandatoryDocuments: ["NABL Accredited Lab Safety Test Report (IS 13252)", "Factory Quality Control Audit Report", "Brand Authorization Trademark Letter"],
+    inspectionRequired: true,
+    validityYears: 2,
+    feeEstimate: "₹35,000 – ₹80,000"
+  },
+  {
+    code: "REQ_STPI_CUSTOMS",
+    title: "STPI / EOU Electronic Hardware Technology Park License",
+    department: "Software Technology Parks of India (STPI) / Customs",
+    category: "General Business",
+    description: "Operating license for duty-free capital equipment import under EHTP / STP export schemes.",
+    mandatoryDocuments: ["Project Export-Import Feasibility Report", "Private Customs Bonded Warehouse Layout", "Board of Directors Resolution"],
+    inspectionRequired: true,
+    validityYears: 5,
+    feeEstimate: "₹25,000 – ₹50,000"
+  },
+
+  // 6. Commercial Services & Warehousing
+  {
+    code: "REQ_SHOPS_ESTABLISHMENT",
+    title: "Shops & Commercial Establishments Act Registration",
+    department: "Department of Labour",
+    category: "Labour Welfare",
+    description: "Mandatory statutory registration regulating working hours, commercial leaves, and employment conditions.",
+    mandatoryDocuments: ["Lease Deed / Ownership Proof of Premises", "PAN & Incorporation Certificate", "Employee Wage Register & Shift Schedule"],
+    inspectionRequired: false,
+    validityYears: 5,
+    feeEstimate: "₹2,500 – ₹6,000"
+  },
+  {
+    code: "REQ_LEGAL_METROLOGY",
+    title: "Legal Metrology Packaged Commodities & Weights Verification",
+    department: "Department of Consumer Affairs (Legal Metrology Division)",
+    category: "General Business",
+    description: "Statutory registration for pre-packaged commodities manufacturing, warehousing, and commercial weighing instruments.",
+    mandatoryDocuments: ["Sample Packaging Label Layout (MRP, Batch, Net Qty)", "Weighing Scale Calibration Verification Certificate", "Commercial Address Proof"],
+    inspectionRequired: true,
+    validityYears: 2,
+    feeEstimate: "₹5,000 – ₹12,000"
+  },
+  {
+    code: "REQ_WDRA_WAREHOUSING",
+    title: "WDRA Commercial Warehouse Registration",
+    department: "Warehousing Development and Regulatory Authority (WDRA)",
+    category: "Infrastructure",
+    description: "Statutory accreditation certifying structural safety, pest control, and security of commercial warehousing yards.",
+    mandatoryDocuments: ["Warehouse Insurance Policy for Fire & Burglary", "Security & Weighbridge Calibration Audit", "Pest Management Contract"],
+    inspectionRequired: true,
+    validityYears: 3,
+    feeEstimate: "₹15,000 – ₹30,000"
+  },
+
+  // 7. Manufacturing Engineering
   {
     code: "REQ_FACTORIES_LICENSE",
-    title: "Factory Registration & License (Form 2)",
+    title: "Factory Registration & Operating License (Form 2)",
     department: "Directorate of Industrial Safety & Health (DISH)",
     category: "Labour & Safety",
     description: "Mandatory factory operating license under the Factories Act, 1948 for manufacturing establishments.",
@@ -68,6 +235,30 @@ const STATUTORY_CATALOG = [
     validityYears: 3,
     feeEstimate: "₹20,000 – ₹60,000"
   },
+  {
+    code: "REQ_BOILER_CERT",
+    title: "Industrial Steam Boiler Operation Certificate",
+    department: "Directorate of Steam Boilers",
+    category: "Safety & Hazard",
+    description: "Statutory annual certificate under Indian Boiler Regulations (IBR 1950) certifying safety of high-pressure vessels.",
+    mandatoryDocuments: ["Hydraulic Pressure Test Inspection Report", "Certified Boiler Attendant License", "Steam Piping Isometric Drawings"],
+    inspectionRequired: true,
+    validityYears: 1,
+    feeEstimate: "₹12,000 – ₹30,000"
+  },
+  {
+    code: "REQ_CEIG_ELECTRICAL",
+    title: "Chief Electrical Inspectorate (CEIG) HT Power Substation Clearance",
+    department: "Chief Electrical Inspectorate to Government",
+    category: "Infrastructure",
+    description: "Statutory safety clearance under Central Electricity Authority Regulations for High Tension (HT) industrial power installations.",
+    mandatoryDocuments: ["HT Transformer & Switchgear Test Reports", "Substation Earthing Resistance Test Results", "Single Line Electrical Diagram (SLD)"],
+    inspectionRequired: true,
+    validityYears: 3,
+    feeEstimate: "₹15,000 – ₹35,000"
+  },
+
+  // 8. Labour Welfare
   {
     code: "REQ_EPFO_REG",
     title: "EPFO Employer Registration & Compliance Code",
@@ -89,39 +280,6 @@ const STATUTORY_CATALOG = [
     inspectionRequired: false,
     validityYears: 10,
     feeEstimate: "Nil (Statutory Free Filing)"
-  },
-  {
-    code: "REQ_BOILER_CERT",
-    title: "Industrial Boiler Operation Certificate",
-    department: "Directorate of Steam Boilers",
-    category: "Safety & Hazard",
-    description: "Statutory annual certificate under Indian Boiler Regulations (IBR) certifying safety of high-pressure vessels.",
-    mandatoryDocuments: ["Hydraulic Pressure Test Inspection Report", "Certified Boiler Attendant License", "Steam Piping Isometric Drawings"],
-    inspectionRequired: true,
-    validityYears: 1,
-    feeEstimate: "₹12,000 – ₹30,000"
-  },
-  {
-    code: "REQ_FSSAI_LICENSE",
-    title: "FSSAI Food Business Manufacturing License",
-    department: "Food Safety and Standards Authority of India (FSSAI)",
-    category: "Food Safety",
-    description: "Central or State statutory food safety license under the Food Safety and Standards Act, 2006.",
-    mandatoryDocuments: ["Food Safety Management System (FSMS) Plan", "Water Potability Test Report", "Equipment Layout & Capacity Breakdown", "Recall Management Protocol"],
-    inspectionRequired: true,
-    validityYears: 3,
-    feeEstimate: "₹7,500 – ₹15,000"
-  },
-  {
-    code: "REQ_PESO_LICENSE",
-    title: "PESO Hazardous Chemical & Petroleum Storage License",
-    department: "Petroleum & Explosives Safety Organisation (PESO)",
-    category: "Safety & Hazard",
-    description: "Statutory approval under Petroleum Rules & Static and Mobile Pressure Vessels (SMPV) Rules.",
-    mandatoryDocuments: ["Storage Tank Fabrication Drawings", "Flameproof Equipment Test Certificates", "On-site Emergency Disaster Management Plan"],
-    inspectionRequired: true,
-    validityYears: 3,
-    feeEstimate: "₹25,000 – ₹50,000"
   }
 ];
 
